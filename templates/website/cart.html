@@ -1,0 +1,81 @@
+{% extends "website/components/base.html" %}
+{% load store_tags %}
+
+{% block title %}Cart — DANIEL{% endblock %}
+
+{% block content %}
+<div class="border-b border-stone-900/5 bg-gradient-to-b from-stone-50 to-stone-100">
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
+    <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Your cart</h1>
+    <p class="mt-2 text-sm text-stone-900/60 sm:text-base">{{ items|length }} item{{ items|length|pluralize }}</p>
+  </div>
+</div>
+
+<div class="mx-auto max-w-6xl px-4 py-8 pb-28 sm:py-10 lg:pb-10">
+  {% if free_shipping_remaining == 0 %}
+  <p class="mb-6 rounded-lg border border-emerald-700/20 bg-emerald-700/10 px-4 py-3 text-sm text-emerald-900">
+    You’ve unlocked free standard shipping on this order.
+  </p>
+  {% else %}
+  <p class="mb-6 rounded-lg border border-stone-900/10 bg-white px-4 py-3 text-sm text-stone-900/70">
+    Add <span class="font-semibold text-stone-900">{{ free_shipping_remaining|money }}</span> more for free standard shipping (over {{ free_shipping_over|money }}).
+  </p>
+  {% endif %}
+  <div class="grid gap-10 lg:grid-cols-3">
+    <div class="space-y-6 lg:col-span-2">
+      {% for item in items %}
+      <article class="flex flex-col gap-4 border-b border-stone-900/10 pb-6 sm:flex-row">
+        <a href="{% url 'product_detail' item.product.slug %}" class="h-36 w-28 shrink-0 overflow-hidden rounded-lg bg-stone-100 transition hover:opacity-90 sm:h-40 sm:w-32">
+          <img src="{{ item.product.primary_image_url }}" alt="" class="h-full w-full object-cover" loading="lazy">
+        </a>
+        <div class="flex min-w-0 flex-1 flex-col justify-between gap-3">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="min-w-0">
+              <a href="{% url 'product_detail' item.product.slug %}" class="break-words font-medium transition hover:text-emerald-700">{{ item.product.name }}</a>
+              {% if item.variant %}<p class="mt-1 text-sm text-stone-900/55">{{ item.variant.color }} / {{ item.variant.size }}</p>{% endif %}
+            </div>
+            <p class="shrink-0 font-semibold">{{ item.line_total|money }}</p>
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <form action="{% url 'cart_update' %}" method="post" class="flex items-center gap-2">
+              {% csrf_token %}
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <label class="sr-only" for="qty-{{ item.id }}">Quantity</label>
+              <input id="qty-{{ item.id }}" type="number" name="quantity" value="{{ item.quantity }}" min="1" class="field !mt-0 !w-16 !px-2 !py-1.5">
+              <button type="submit" class="link-accent text-sm">Update</button>
+            </form>
+            <form action="{% url 'cart_remove' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <button type="submit" class="text-sm text-stone-900/50 transition hover:text-stone-900">Remove</button>
+            </form>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+      <a href="{% url 'shop' %}" class="link-accent inline-block text-sm">Continue shopping</a>
+    </div>
+
+    <aside class="hidden h-fit rounded-lg border border-stone-900/10 bg-white p-6 lg:sticky lg:top-24 lg:block">
+      <h2 class="font-display text-xl font-bold">Order summary</h2>
+      <dl class="mt-6 space-y-3 text-sm">
+        <div class="flex justify-between gap-3"><dt class="text-stone-900/55">Subtotal</dt><dd class="shrink-0 font-medium">{{ subtotal|money }}</dd></div>
+        <div class="flex items-start justify-between gap-3"><dt class="text-stone-900/55">Shipping</dt><dd class="max-w-[60%] text-right font-medium">{% if free_shipping_remaining == 0 %}Free standard{% else %}Calculated at checkout{% endif %}</dd></div>
+        <div class="flex justify-between gap-3 border-t border-stone-900/10 pt-3 text-base"><dt class="font-semibold">Total</dt><dd class="shrink-0 font-semibold">{{ subtotal|money }}</dd></div>
+      </dl>
+      <a href="{% url 'checkout' %}" class="btn-primary mt-6 w-full">Checkout</a>
+      <p class="mt-4 text-xs leading-relaxed text-stone-900/50">Taxes included where applicable. COD, KBZ Pay, Wave Money, and bank transfer at checkout.</p>
+    </aside>
+  </div>
+</div>
+
+<div class="fixed inset-x-0 bottom-16 z-40 border-t border-stone-900/10 bg-stone-50/95 px-4 py-3 backdrop-blur-md lg:hidden">
+  <div class="mx-auto flex max-w-lg items-center justify-between gap-4">
+    <div>
+      <p class="text-xs text-stone-900/50">Total</p>
+      <p class="font-semibold">{{ subtotal|money }}</p>
+    </div>
+    <a href="{% url 'checkout' %}" class="btn-primary px-6">Checkout</a>
+  </div>
+</div>
+{% endblock %}

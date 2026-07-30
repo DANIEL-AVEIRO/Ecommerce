@@ -1,0 +1,54 @@
+{% extends "website/components/base.html" %}
+
+{% block title %}Shipping — DANIEL{% endblock %}
+
+{% block content %}
+<div class="border-b border-stone-900/5 bg-gradient-to-b from-stone-50 to-stone-100">
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
+    <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Shipping</h1>
+    <p class="mt-2 text-sm text-stone-900/60 sm:text-base">Clear timelines and fees for delivery across Myanmar.</p>
+  </div>
+</div>
+
+<div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
+  <div class="grid gap-4 sm:grid-cols-3">
+    <div class="rounded-lg border border-stone-900/10 bg-white p-5">
+      <p class="text-xs font-semibold uppercase tracking-widest text-stone-900/45">Standard</p>
+      <p class="mt-3 font-display text-2xl font-bold">3,000 Ks</p>
+      <p class="mt-2 text-sm text-stone-900/60">2–4 days Yangon · 3–7 days elsewhere</p>
+    </div>
+    <div class="rounded-lg border border-stone-900/10 bg-white p-5">
+      <p class="text-xs font-semibold uppercase tracking-widest text-stone-900/45">Express</p>
+      <p class="mt-3 font-display text-2xl font-bold">6,000 Ks</p>
+      <p class="mt-2 text-sm text-stone-900/60">1–2 days Yangon · faster handoff to courier</p>
+    </div>
+    <div class="rounded-lg border border-emerald-700/30 bg-emerald-700/5 p-5">
+      <p class="text-xs font-semibold uppercase tracking-widest text-emerald-800/70">Free shipping</p>
+      <p class="mt-3 font-display text-2xl font-bold text-emerald-800">150,000 Ks+</p>
+      <p class="mt-2 text-sm text-stone-900/60">Standard fee waived automatically at checkout</p>
+    </div>
+  </div>
+
+  <div class="mx-auto mt-12 max-w-3xl space-y-10">
+    <section>
+      <h2 class="font-display text-2xl font-bold">Delivery times</h2>
+      <ul class="mt-4 space-y-2 text-sm text-stone-900/70">
+        <li class="flex justify-between gap-4 border-b border-stone-900/5 py-2"><span>Yangon</span><span class="font-medium text-stone-900">2–4 business days</span></li>
+        <li class="flex justify-between gap-4 border-b border-stone-900/5 py-2"><span>Mandalay & major cities</span><span class="font-medium text-stone-900">3–5 business days</span></li>
+        <li class="flex justify-between gap-4 border-b border-stone-900/5 py-2"><span>Other regions</span><span class="font-medium text-stone-900">4–7 business days</span></li>
+      </ul>
+    </section>
+    <section>
+      <h2 class="font-display text-2xl font-bold">What you’ll need</h2>
+      <p class="mt-3 text-sm leading-relaxed text-stone-900/65">
+        A reachable phone number and clear address help couriers deliver on the first attempt. You’ll get updates when your parcel ships. Orders placed after 2pm may leave the next business day.
+      </p>
+    </section>
+    <div class="flex flex-wrap gap-4 text-sm">
+      <a href="{% url 'returns' %}" class="font-semibold text-emerald-700 hover:text-emerald-600">Returns policy →</a>
+      <a href="{% url 'faq' %}" class="font-semibold text-emerald-700 hover:text-emerald-600">FAQ →</a>
+      <a href="{% url 'contact' %}" class="font-semibold text-emerald-700 hover:text-emerald-600">Contact →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

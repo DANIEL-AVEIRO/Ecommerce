@@ -1,0 +1,51 @@
+{% extends "website/components/base.html" %}
+{% load store_tags %}
+
+{% block title %}Search — DANIEL{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-stone-50 to-stone-100 border-b border-stone-900/5">
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
+    <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Search</h1>
+    <p class="mt-2 text-sm text-stone-900/60 sm:text-base">Find products by name across the collection.</p>
+    <form action="{% url 'search' %}" method="get" class="mt-6 flex max-w-xl flex-col gap-2 sm:flex-row">
+      <label class="sr-only" for="search-q">Search products</label>
+      <input id="search-q" type="search" name="q" value="{{ query }}" placeholder="Enter your search" class="field !mt-0">
+      <button type="submit" class="btn-dark shrink-0 !py-3">Search</button>
+    </form>
+  </div>
+</div>
+
+<div class="mx-auto max-w-6xl px-4 py-10">
+  {% if query %}
+  <p class="mb-6 break-words text-sm text-stone-900/55">{{ result_count }} result{{ result_count|pluralize }} for “{{ query }}”</p>
+  <div class="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+    {% for product in products %}
+      {% include "website/components/product_card.html" %}
+    {% empty %}
+      <div class="flex flex-col items-center justify-center py-16 text-center sm:col-span-2 lg:col-span-3">
+        <h2 class="font-display text-2xl font-bold">No matches</h2>
+        <p class="mt-2 max-w-sm text-sm text-stone-900/60">Try a shorter keyword, check spelling, or browse by category below.</p>
+        <div class="mt-6 flex flex-wrap justify-center gap-2">
+          <a href="{% url 'shop' %}" class="btn-primary">Browse shop</a>
+          <a href="{% url 'shop' %}?category=new" class="btn-ghost">New arrivals</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="max-w-2xl">
+    <h2 class="font-display text-xl font-bold">Popular ways to browse</h2>
+    <p class="mt-2 text-sm text-stone-900/60">Start with a category or jump into what’s new.</p>
+    <div class="mt-6 flex flex-wrap gap-2">
+      <a href="{% url 'shop' %}" class="rounded-md border border-stone-900/10 bg-white px-3 py-1.5 text-sm font-medium transition hover:border-emerald-700 hover:text-emerald-700">All products</a>
+      <a href="{% url 'shop' %}?category=new" class="rounded-md border border-stone-900/10 bg-white px-3 py-1.5 text-sm font-medium transition hover:border-emerald-700 hover:text-emerald-700">New arrivals</a>
+      <a href="{% url 'shop' %}?category=sale" class="rounded-md border border-stone-900/10 bg-white px-3 py-1.5 text-sm font-medium transition hover:border-emerald-700 hover:text-emerald-700">Sale</a>
+      {% for category in categories %}
+      <a href="{% url 'category' category.slug %}" class="rounded-md border border-stone-900/10 bg-white px-3 py-1.5 text-sm font-medium transition hover:border-emerald-700 hover:text-emerald-700">{{ category.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

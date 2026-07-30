@@ -1,0 +1,319 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}DANIEL{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.469.0"></script>
+  <style>
+    .font-sans {
+      font-family: Manrope, ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .font-display {
+      font-family: Syne, ui-sans-serif, system-ui, sans-serif;
+    }
+
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .rise-in {
+      animation: rise-in 0.45s ease-out both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.375rem;
+      background: #047857;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #fff;
+      transition: background-color 0.2s, transform 0.15s, opacity 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #059669;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary:focus-visible,
+    .btn-dark:focus-visible,
+    .btn-ghost:focus-visible {
+      outline: 2px solid #047857;
+      outline-offset: 2px;
+    }
+
+    .btn-primary:disabled,
+    .btn-dark:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .btn-dark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.375rem;
+      background: #1c1917;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #fff;
+      transition: background-color 0.2s, transform 0.15s, opacity 0.2s;
+    }
+
+    .btn-dark:hover {
+      background: #047857;
+    }
+
+    .btn-dark:active {
+      transform: scale(0.98);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.375rem;
+      border: 1px solid rgba(28, 25, 23, 0.15);
+      padding: 0.75rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1c1917;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+
+    .btn-ghost:hover {
+      border-color: #047857;
+      color: #047857;
+    }
+
+    .btn-ghost:active {
+      transform: scale(0.98);
+    }
+
+    .field {
+      margin-top: 0.375rem;
+      width: 100%;
+      border-radius: 0.375rem;
+      border: 1px solid rgba(28, 25, 23, 0.1);
+      background: #fff;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field:focus {
+      border-color: #047857;
+      box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12);
+    }
+
+    .field::placeholder {
+      color: rgba(28, 25, 23, 0.3);
+    }
+
+    .label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgba(28, 25, 23, 0.8);
+    }
+
+    .link-accent {
+      color: #047857;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .link-accent:hover {
+      color: #059669;
+    }
+
+    details.accordion > summary {
+      list-style: none;
+    }
+
+    details.accordion > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.accordion .accordion-icon {
+      display: inline-flex;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    details.accordion[open] .accordion-icon {
+      transform: rotate(45deg);
+    }
+
+    details.accordion .accordion-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    details.accordion .accordion-body.is-open {
+      grid-template-rows: 1fr;
+    }
+
+    details.accordion .accordion-inner {
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    details.accordion .accordion-inner > :first-child {
+      margin-top: 0.75rem;
+    }
+
+    @keyframes toast-in {
+      from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes toast-out {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+      }
+    }
+
+    [data-toast] {
+      animation: toast-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+
+    [data-toast].is-leaving {
+      animation: toast-out 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body class="font-sans text-stone-900 bg-stone-50 antialiased min-h-screen flex flex-col overflow-x-hidden">
+  {% include "website/components/navbar.html" %}
+  {% include "website/components/message.html" %}
+
+  <main class="flex-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "website/components/footer.html" %}
+  {% include "website/components/bottom_nav.html" %}
+
+  <script>
+    (function () {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+
+      document.querySelectorAll("details.accordion").forEach(function (details) {
+        var summary = details.querySelector("summary");
+        var body = details.querySelector(".accordion-body");
+        if (!summary || !body) return;
+
+        if (details.open) {
+          body.classList.add("is-open");
+        }
+
+        summary.addEventListener("click", function (event) {
+          event.preventDefault();
+          if (details.dataset.animating === "1") return;
+          details.dataset.animating = "1";
+
+          function finish() {
+            details.dataset.animating = "0";
+          }
+
+          if (details.open) {
+            body.classList.remove("is-open");
+            var onClose = function (e) {
+              if (e.target !== body || e.propertyName !== "grid-template-rows") return;
+              body.removeEventListener("transitionend", onClose);
+              details.removeAttribute("open");
+              finish();
+            };
+            body.addEventListener("transitionend", onClose);
+          } else {
+            details.setAttribute("open", "");
+            requestAnimationFrame(function () {
+              body.classList.add("is-open");
+            });
+            var onOpen = function (e) {
+              if (e.target !== body || e.propertyName !== "grid-template-rows") return;
+              body.removeEventListener("transitionend", onOpen);
+              finish();
+            };
+            body.addEventListener("transitionend", onOpen);
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-toast]").forEach(function (toast) {
+        function dismiss() {
+          if (toast.classList.contains("is-leaving")) return;
+          toast.classList.add("is-leaving");
+          toast.addEventListener(
+            "animationend",
+            function () {
+              toast.remove();
+              var root = document.getElementById("toast-root");
+              if (root && !root.querySelector("[data-toast]")) {
+                root.remove();
+              }
+            },
+            { once: true }
+          );
+        }
+
+        var closeBtn = toast.querySelector("[data-toast-close]");
+        if (closeBtn) {
+          closeBtn.addEventListener("click", dismiss);
+        }
+
+        setTimeout(dismiss, 4500);
+      });
+
+      document.querySelectorAll("form").forEach(function (form) {
+        form.addEventListener("submit", function () {
+          form.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(function (btn) {
+            btn.disabled = true;
+            btn.classList.add("opacity-60", "pointer-events-none");
+          });
+          document.querySelectorAll('button[type="submit"][form="' + form.id + '"]').forEach(function (btn) {
+            btn.disabled = true;
+            btn.classList.add("opacity-60", "pointer-events-none");
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+
+</html>

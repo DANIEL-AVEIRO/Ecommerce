@@ -1,0 +1,94 @@
+{% extends "website/components/base.html" %}
+{% load store_tags %}
+
+{% block title %}Shop — DANIEL{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-stone-50 to-stone-100 border-b border-stone-900/5">
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
+    <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Shop</h1>
+    <p class="mt-2 text-sm text-stone-900/60 sm:text-base">Browse the full collection — filter by category, price, or sort.</p>
+    <div class="mt-6 flex flex-wrap gap-2">
+      <a href="{% url 'shop' %}" class="rounded-md px-3 py-1.5 text-sm font-medium transition {% if not selected_category %}bg-stone-900 text-white{% else %}border border-stone-900/10 bg-white text-stone-900/70 hover:border-emerald-700 hover:text-emerald-700{% endif %}">All</a>
+      <a href="{% url 'shop' %}?category=new" class="rounded-md px-3 py-1.5 text-sm font-medium transition {% if selected_category == 'new' %}bg-stone-900 text-white{% else %}border border-stone-900/10 bg-white text-stone-900/70 hover:border-emerald-700 hover:text-emerald-700{% endif %}">New</a>
+      <a href="{% url 'shop' %}?category=sale" class="rounded-md px-3 py-1.5 text-sm font-medium transition {% if selected_category == 'sale' %}bg-stone-900 text-white{% else %}border border-stone-900/10 bg-white text-stone-900/70 hover:border-emerald-700 hover:text-emerald-700{% endif %}">Sale</a>
+      {% for category in categories %}
+      <a href="{% url 'shop' %}?category={{ category.slug }}" class="rounded-md px-3 py-1.5 text-sm font-medium transition {% if selected_category == category.slug %}bg-stone-900 text-white{% else %}border border-stone-900/10 bg-white text-stone-900/70 hover:border-emerald-700 hover:text-emerald-700{% endif %}">{{ category.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="mx-auto max-w-6xl px-4 py-8 sm:py-10">
+  <div class="flex flex-col gap-8 md:flex-row">
+    <aside class="w-full shrink-0 md:w-48 lg:w-56">
+      <form method="get" class="space-y-6 rounded-md border border-stone-900/10 bg-white p-4 md:border-0 md:bg-transparent md:p-0">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-stone-900/45">Category</p>
+          <div class="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-3 md:grid-cols-1">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="category" value="" class="accent-emerald-700" {% if not selected_category %}checked{% endif %}> All
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="category" value="new" class="accent-emerald-700" {% if selected_category == 'new' %}checked{% endif %}> New
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="category" value="sale" class="accent-emerald-700" {% if selected_category == 'sale' %}checked{% endif %}> Sale
+            </label>
+            {% for category in categories %}
+            <label class="flex items-center gap-2">
+              <input type="radio" name="category" value="{{ category.slug }}" class="accent-emerald-700" {% if selected_category == category.slug %}checked{% endif %}>
+              {{ category.name }}
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-stone-900/45">Sort</p>
+          <select name="sort" class="mt-3 w-full rounded-md border border-stone-900/10 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-700">
+            <option value="featured" {% if selected_sort == 'featured' %}selected{% endif %}>Featured</option>
+            <option value="newest" {% if selected_sort == 'newest' %}selected{% endif %}>Newest</option>
+            <option value="price_asc" {% if selected_sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+            <option value="price_desc" {% if selected_sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+          </select>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-stone-900/45">Price</p>
+          <div class="mt-3 grid grid-cols-2 gap-2">
+            <input type="number" name="min_price" value="{{ min_price }}" placeholder="Enter min price" class="min-w-0 rounded-md border border-stone-900/10 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-700">
+            <input type="number" name="max_price" value="{{ max_price }}" placeholder="Enter max price" class="min-w-0 rounded-md border border-stone-900/10 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-700">
+          </div>
+        </div>
+        <button type="submit" class="btn-dark w-full !py-2.5">Apply filters</button>
+      </form>
+    </aside>
+
+    <div class="min-w-0 flex-1">
+      <p class="mb-6 text-sm text-stone-900/55">Showing {{ page_obj.paginator.count }} products</p>
+      <div class="grid gap-6 sm:grid-cols-2 sm:gap-8 xl:grid-cols-3">
+        {% for product in products %}
+          {% include "website/components/product_card.html" %}
+        {% empty %}
+          <div class="flex flex-col items-center justify-center py-16 text-center sm:col-span-2 xl:col-span-3">
+            <h2 class="font-display text-2xl font-bold">No products found</h2>
+            <p class="mt-2 text-sm text-stone-900/60">Try another category or clear your filters.</p>
+            <a href="{% url 'shop' %}" class="btn-ghost mt-6">Clear filters</a>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if page_obj.paginator.num_pages > 1 %}
+      <nav class="mt-12 flex flex-wrap items-center justify-center gap-2" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&category={{ selected_category }}&sort={{ selected_sort }}&min_price={{ min_price }}&max_price={{ max_price }}" class="rounded-md border border-stone-900/10 px-3 py-2 text-sm font-medium hover:border-emerald-700">Prev</a>
+        {% endif %}
+        <span class="rounded-md bg-stone-900 px-3 py-2 text-sm font-medium text-white">{{ page_obj.number }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&category={{ selected_category }}&sort={{ selected_sort }}&min_price={{ min_price }}&max_price={{ max_price }}" class="rounded-md border border-stone-900/10 px-3 py-2 text-sm font-medium hover:border-emerald-700">Next</a>
+        {% endif %}
+      </nav>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

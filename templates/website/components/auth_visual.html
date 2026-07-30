@@ -1,0 +1,17 @@
+{% load static %}
+<aside class="relative hidden min-h-[calc(100vh-4rem)] overflow-hidden lg:block">
+  <div
+    class="absolute inset-0 scale-105 bg-cover bg-center motion-safe:animate-[auth-pan_28s_ease-in-out_infinite_alternate]"
+    style="background-image: linear-gradient(160deg, rgba(12,14,16,0.72) 0%, rgba(12,14,16,0.35) 50%, rgba(12,14,16,0.65) 100%), url('{% static image_path %}');"
+    aria-hidden="true"
+  ></div>
+  <div class="relative flex h-full min-h-[calc(100vh-4rem)] flex-col justify-between p-10 xl:p-14">
+    <a href="{% url 'index' %}" class="font-display text-sm font-bold tracking-[0.2em] text-white/70 transition hover:text-white">DANIEL</a>
+    <div class="max-w-md">
+      <p class="font-display text-5xl font-extrabold leading-none tracking-tight text-white xl:text-6xl">DANIEL</p>
+      <p class="mt-5 text-lg leading-relaxed text-white/75">{{ tagline }}</p>
+      <div class="mt-8 h-px w-16 origin-left bg-emerald-400 motion-safe:animate-[auth-line_1.1s_ease-out_forwards]"></div>
+    </div>
+    <p class="text-xs tracking-wide text-white/45">Everyday essentials · Yangon</p>
+  </div>
+</aside>
