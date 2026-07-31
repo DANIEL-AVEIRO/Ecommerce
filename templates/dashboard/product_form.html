@@ -1,0 +1,344 @@
+{% extends "dashboard/components/base.html" %}
+{% block content %}
+  <div class="mb-5">
+    <a href="{% url 'dashboard_products' %}"
+       class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-teal-700">
+      <i data-lucide="arrow-left" class="h-4 w-4"></i>
+      Back to products
+    </a>
+  </div>
+  <div class="w-full space-y-6">
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+      <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+        <h2 class="font-display text-lg font-bold">Product details</h2>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          <div class="sm:col-span-2">
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Name</label>
+            <input name="name"
+                   required
+                   value="{{ product.name|default:'' }}"
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                   placeholder="Classic Tee">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Category</label>
+            <select name="category_id"
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+              <option value="">Select category</option>
+              {% for category in categories %}
+                <option value="{{ category.id }}"
+                        {% if product and product.category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Or new category</label>
+            <input name="new_category_name"
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                   placeholder="Optional new name">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">SKU</label>
+            <input name="sku"
+                   required
+                   value="{{ product.sku|default:'' }}"
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                   placeholder="TEE-001">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Material</label>
+            <input name="material"
+                   value="{{ product.material|default:'' }}"
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                   placeholder="Cotton">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Regular price (Ks)</label>
+            <input name="regular_price"
+                   type="number"
+                   min="1"
+                   required
+                   value="{{ product.regular_price|default:'' }}"
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                   placeholder="25000">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Sale price (Ks)</label>
+            <input name="sale_price"
+                   type="number"
+                   min="0"
+                   value="{% if product and product.sale_price %}{{ product.sale_price }}{% endif %}"
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                   placeholder="Optional">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Description</label>
+            <textarea name="description"
+                      rows="4"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                      placeholder="Short product description">{{ product.description|default:'' }}</textarea>
+          </div>
+          <div class="flex items-center gap-6 sm:col-span-2">
+            <label class="inline-flex items-center gap-2 text-sm">
+              <input type="checkbox"
+                     name="is_active"
+                     class="rounded border-slate-300"
+                     {% if not product or product.is_active %}checked{% endif %}>
+              Active (visible in shop)
+            </label>
+            <label class="inline-flex items-center gap-2 text-sm">
+              <input type="checkbox"
+                     name="is_featured"
+                     class="rounded border-slate-300"
+                     {% if product and product.is_featured %}checked{% endif %}>
+              Featured
+            </label>
+          </div>
+        </div>
+      </div>
+      {% if not product %}
+        <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+          <h2 class="font-display text-lg font-bold">First variant</h2>
+          <p class="mt-1 text-sm text-slate-500">After creating, you can add more colors and sizes.</p>
+          <div class="mt-4 grid gap-4 sm:grid-cols-3">
+            <div>
+              <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Color</label>
+              <input name="color"
+                     value="Default"
+                     class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+            </div>
+            <div>
+              <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Size</label>
+              <input name="size"
+                     value="One Size"
+                     class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+            </div>
+            <div>
+              <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Stock</label>
+              <input name="stock"
+                     type="number"
+                     min="0"
+                     value="0"
+                     class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+            </div>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+          <h2 class="font-display text-lg font-bold">Product images</h2>
+          <p class="mt-1 text-sm text-slate-500">Upload one or more photos. The first file becomes the primary image for the shop gallery.</p>
+          <div class="mt-4">
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Upload images</label>
+            <input type="file"
+                   name="gallery_images"
+                   accept="image/*"
+                   multiple
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+          </div>
+        </div>
+      {% endif %}
+      <div class="flex flex-wrap items-center gap-3">
+        <button type="submit"
+                name="action"
+                value="save"
+                class="btn btn__primary">
+          {% if product %}Save changes{% else %}Create product{% endif %}
+        </button>
+        <a href="{% url 'dashboard_products' %}" class="btn btn__ghost">Cancel</a>
+        {% if product %}
+          <button type="submit"
+                  name="action"
+                  value="delete"
+                  class="btn btn__danger ml-auto"
+                  onclick="return confirm('Delete this product?');">
+            Delete
+          </button>
+        {% endif %}
+      </div>
+    </form>
+
+    {% if product %}
+      <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+        <h2 class="font-display text-lg font-bold">Product image gallery</h2>
+        <p class="mt-1 text-sm text-slate-500">
+          These photos show on the product detail page. Primary image is used on product cards and as the main photo.
+        </p>
+        <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {% for image in product_images %}
+            <div class="rounded-xl border border-slate-200 p-2">
+              <img src="{{ image.image.url }}"
+                   alt=""
+                   class="aspect-square w-full rounded-lg object-cover">
+              <div class="mt-2 space-y-1">
+                {% if image.is_primary %}
+                  <p class="py-1.5 text-center text-xs font-semibold text-teal-700">Primary</p>
+                {% else %}
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="image_id" value="{{ image.id }}">
+                    <button type="submit"
+                            name="action"
+                            value="set_primary_image"
+                            class="btn btn__ghost btn__sm w-full">
+                      Set primary
+                    </button>
+                  </form>
+                {% endif %}
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="image_id" value="{{ image.id }}">
+                  <button type="submit"
+                          name="action"
+                          value="delete_image"
+                          class="btn btn__danger btn__sm w-full"
+                          onclick="return confirm('Remove this image?');">
+                    Remove
+                  </button>
+                </form>
+              </div>
+            </div>
+          {% empty %}
+            <div class="col-span-full rounded-xl border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-500">
+              No gallery images yet. Add photos below.
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <form method="post"
+            enctype="multipart/form-data"
+            class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 shadow-sm sm:p-6">
+        {% csrf_token %}
+        <h3 class="font-display text-lg font-bold">Add gallery images</h3>
+        <p class="mt-1 text-sm text-slate-500">Select one or more image files at once.</p>
+        <div class="mt-4">
+          <input type="file"
+                 name="gallery_images"
+                 accept="image/*"
+                 multiple
+                 required
+                 class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm">
+        </div>
+        <button type="submit"
+                name="action"
+                value="add_images"
+                class="btn btn__primary mt-4">
+          Add to gallery
+        </button>
+      </form>
+
+      <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+        <h2 class="font-display text-lg font-bold">Variants</h2>
+        <p class="mt-1 text-sm text-slate-500">Add colors and sizes for this product.</p>
+        <div class="mt-4 space-y-3">
+          {% for variant in variants %}
+            <form method="post"
+                  class="rounded-xl border border-slate-200 p-4">
+              {% csrf_token %}
+              <input type="hidden" name="variant_id" value="{{ variant.id }}">
+              <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div>
+                  <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Color</label>
+                  <input name="color"
+                         value="{{ variant.color }}"
+                         required
+                         class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                </div>
+                <div>
+                  <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Size</label>
+                  <input name="size"
+                         value="{{ variant.size }}"
+                         required
+                         class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                </div>
+                <div>
+                  <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">SKU</label>
+                  <input name="variant_sku"
+                         value="{{ variant.sku }}"
+                         required
+                         class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                </div>
+                <div>
+                  <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Stock</label>
+                  <input name="stock"
+                         type="number"
+                         min="0"
+                         value="{{ variant.stock }}"
+                         class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                </div>
+              </div>
+              <div class="mt-3 flex flex-wrap items-center gap-2">
+                <label class="mr-auto inline-flex items-center gap-2 text-sm">
+                  <input type="checkbox"
+                         name="is_active"
+                         class="rounded border-slate-300"
+                         {% if variant.is_active %}checked{% endif %}>
+                  Active
+                </label>
+                <button type="submit"
+                        name="action"
+                        value="update_variant"
+                        class="btn btn__secondary btn__sm">
+                  Save
+                </button>
+                <button type="submit"
+                        name="action"
+                        value="delete_variant"
+                        class="btn btn__danger btn__sm"
+                        onclick="return confirm('Delete this variant?');">
+                  Delete
+                </button>
+              </div>
+            </form>
+          {% empty %}
+            <p class="rounded-xl border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500">
+              No variants yet. Add one below.
+            </p>
+          {% endfor %}
+        </div>
+        <form method="post"
+              class="mt-5 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 sm:p-5">
+          {% csrf_token %}
+          <h3 class="text-sm font-semibold text-slate-900">Add variant</h3>
+          <p class="mt-1 text-xs text-slate-500">Create a new color and size option for this product.</p>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Color</label>
+              <input name="color"
+                     required
+                     class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                     placeholder="Black">
+            </div>
+            <div>
+              <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Size</label>
+              <input name="size"
+                     required
+                     class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                     placeholder="M">
+            </div>
+            <div>
+              <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">SKU</label>
+              <input name="variant_sku"
+                     class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                     placeholder="Optional">
+            </div>
+            <div>
+              <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Stock</label>
+              <input name="stock"
+                     type="number"
+                     min="0"
+                     value="0"
+                     class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+            </div>
+          </div>
+          <button type="submit"
+                  name="action"
+                  value="add_variant"
+                  class="btn btn__primary mt-3">
+            Add variant
+          </button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

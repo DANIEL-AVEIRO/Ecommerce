@@ -1,78 +1,85 @@
 {% extends "website/components/base.html" %}
-{% load store_tags %}
-
+{% load humanize %}
 {% block title %}Account — DANIEL{% endblock %}
-
 {% block content %}
-<div class="bg-gradient-to-b from-stone-50 to-stone-100 border-b border-stone-900/5">
-  <div class="mx-auto max-w-6xl px-4 py-12">
-    <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Account</h1>
-    <p class="mt-2 text-stone-900/60">Hello, {{ user.first_name|default:user.username }}</p>
-  </div>
-</div>
-
-<div class="mx-auto max-w-6xl px-4 py-10">
-  <div class="grid gap-8 lg:grid-cols-4">
-    {% include "website/components/account_nav.html" with active="overview" %}
-    <div class="lg:col-span-3 space-y-8">
-      <section class="rounded-md border border-stone-900/10 bg-white p-4 sm:p-6">
-        <h2 class="font-display text-xl font-bold">Overview</h2>
-        <div class="mt-6 grid gap-4 sm:grid-cols-3">
-          <a href="{% url 'account_orders' %}" class="rounded-md border border-stone-900/10 p-4 transition hover:border-emerald-700">
-            <p class="text-2xl font-semibold">{{ order_count }}</p>
-            <p class="mt-1 text-sm text-stone-900/55">Orders</p>
-          </a>
-          <a href="{% url 'wishlist' %}" class="rounded-md border border-stone-900/10 p-4 transition hover:border-emerald-700">
-            <p class="text-2xl font-semibold">{{ wishlist_count }}</p>
-            <p class="mt-1 text-sm text-stone-900/55">Wishlist items</p>
-          </a>
-          <a href="{% url 'account_addresses' %}" class="rounded-md border border-stone-900/10 p-4 transition hover:border-emerald-700">
-            <p class="text-2xl font-semibold">{{ address_count }}</p>
-            <p class="mt-1 text-sm text-stone-900/55">Addresses</p>
-          </a>
-        </div>
-      </section>
-
-      <section class="rounded-md border border-stone-900/10 bg-white p-4 sm:p-6">
-        <div class="flex items-center justify-between gap-3">
-          <h2 class="font-display text-xl font-bold">Recent orders</h2>
-          <a href="{% url 'account_orders' %}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-600">View all</a>
-        </div>
-        <div class="mt-4 overflow-x-auto">
-          <table class="w-full min-w-[480px] text-left text-sm">
-            <thead class="border-b border-stone-900/10 text-stone-900/45">
-              <tr>
-                <th class="py-2 font-medium">Order</th>
-                <th class="py-2 font-medium">Date</th>
-                <th class="py-2 font-medium">Status</th>
-                <th class="py-2 font-medium text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for order in orders %}
-              <tr class="border-b border-stone-900/5">
-                <td class="py-3"><a href="{% url 'account_order_detail' order.order_number %}" class="font-medium hover:text-emerald-700">{{ order.order_number }}</a></td>
-                <td class="py-3 text-stone-900/60">{{ order.created_at|date:"M j, Y" }}</td>
-                <td class="py-3"><span class="rounded bg-emerald-700/10 px-2 py-0.5 text-xs font-medium text-emerald-700">{{ order.get_status_display }}</span></td>
-                <td class="py-3 text-right font-medium">{{ order.total|money }}</td>
-              </tr>
-              {% empty %}
-              <tr><td colspan="4" class="py-6 text-stone-900/55">No orders yet.</td></tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </section>
-      <section class="rounded-md border border-stone-900/10 bg-white p-4 sm:p-6">
-        <h2 class="font-display text-xl font-bold">Need a hand?</h2>
-        <ul class="mt-4 space-y-2 text-sm text-stone-900/65">
-          <li><a href="{% url 'shipping' %}" class="text-emerald-700 hover:text-emerald-600">Shipping times & fees</a></li>
-          <li><a href="{% url 'returns' %}" class="text-emerald-700 hover:text-emerald-600">Returns policy</a></li>
-          <li><a href="{% url 'faq' %}" class="text-emerald-700 hover:text-emerald-600">FAQ</a></li>
-          <li><a href="{% url 'contact' %}" class="text-emerald-700 hover:text-emerald-600">Contact support</a></li>
-        </ul>
-      </section>
+  <div class="bg-gradient-to-b from-stone-50 to-stone-100 border-b border-stone-900/5">
+    <div class="mx-auto max-w-6xl px-4 py-12">
+      <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Account</h1>
+      <p class="mt-2 text-stone-900/60">Hello, {{ user.username }}</p>
     </div>
   </div>
-</div>
+  <div class="mx-auto max-w-6xl px-4 py-10">
+    <div class="grid gap-8 lg:grid-cols-4">
+      {% include "website/components/account_nav.html" with active="overview" %}
+      <div class="lg:col-span-3 space-y-8">
+        <section class="rounded-md border border-stone-900/10 bg-white p-4 sm:p-6">
+          <h2 class="font-display text-xl font-bold">Overview</h2>
+          <div class="mt-6 grid gap-4 sm:grid-cols-3">
+            <a href="{% url 'account_orders' %}"
+               class="rounded-md border border-stone-900/10 p-4 transition hover:border-emerald-700">
+              <p class="text-2xl font-semibold">{{ order_count }}</p>
+              <p class="mt-1 text-sm text-stone-900/55">Orders</p>
+            </a>
+            <a href="{% url 'wishlist' %}"
+               class="rounded-md border border-stone-900/10 p-4 transition hover:border-emerald-700">
+              <p class="text-2xl font-semibold">{{ wishlist_count }}</p>
+              <p class="mt-1 text-sm text-stone-900/55">Wishlist items</p>
+            </a>
+            <a href="{% url 'account_addresses' %}"
+               class="rounded-md border border-stone-900/10 p-4 transition hover:border-emerald-700">
+              <p class="text-2xl font-semibold">{{ address_count }}</p>
+              <p class="mt-1 text-sm text-stone-900/55">Addresses</p>
+            </a>
+          </div>
+        </section>
+        <section class="rounded-md border border-stone-900/10 bg-white p-4 sm:p-6">
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="font-display text-xl font-bold">Recent orders</h2>
+            <a href="{% url 'account_orders' %}"
+               class="text-sm font-semibold text-emerald-700 hover:text-emerald-600">View all</a>
+          </div>
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full min-w-[480px] text-left text-sm">
+              <thead class="border-b border-stone-900/10 text-stone-900/45">
+                <tr>
+                  <th class="py-2 font-medium">Order</th>
+                  <th class="py-2 font-medium">Date</th>
+                  <th class="py-2 font-medium">Status</th>
+                  <th class="py-2 font-medium text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in orders %}
+                  <tr class="border-b border-stone-900/5">
+                    <td class="py-3"><a href="{% url 'account_order_detail' order.order_number %}"
+   class="font-medium hover:text-emerald-700">{{ order.order_number }}</a></td>
+                    <td class="py-3 text-stone-900/60">{{ order.created_at|date:"M j, Y" }}</td>
+                    <td class="py-3"><span class="rounded bg-emerald-700/10 px-2 py-0.5 text-xs font-medium text-emerald-700">{{ order.get_status_display }}</span></td>
+                    <td class="py-3 text-right font-medium">{{ order.total|intcomma }} Ks</td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="4" class="py-6 text-stone-900/55">No orders yet.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section class="rounded-md border border-stone-900/10 bg-white p-4 sm:p-6">
+          <h2 class="font-display text-xl font-bold">Need a hand?</h2>
+          <ul class="mt-4 space-y-2 text-sm text-stone-900/65">
+            <li><a href="{% url 'shipping' %}"
+   class="text-emerald-700 hover:text-emerald-600">Shipping times & fees</a></li>
+            <li><a href="{% url 'returns' %}"
+   class="text-emerald-700 hover:text-emerald-600">Returns policy</a></li>
+            <li><a href="{% url 'faq' %}"
+   class="text-emerald-700 hover:text-emerald-600">FAQ</a></li>
+            <li><a href="{% url 'contact' %}"
+   class="text-emerald-700 hover:text-emerald-600">Contact support</a></li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
 {% endblock %}

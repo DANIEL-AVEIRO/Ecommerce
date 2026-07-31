@@ -1,0 +1,39 @@
+{% extends "dashboard/components/base.html" %}
+{% block content %}
+  {% include "dashboard/components/table_filters.html" %}
+  <div class="space-y-4">
+    {% for review in reviews %}
+      <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p class="font-display text-lg font-bold">{{ review.product.name }}</p>
+            <p class="mt-1 text-sm text-slate-500">
+              {{ review.user.username }} · {{ review.rating }}/5 · {{ review.created_at|date:"M j, Y" }}
+              {% if review.is_verified_purchase %}· Verified{% endif %}
+            </p>
+            <p class="mt-3 text-sm text-slate-700">{{ review.comment }}</p>
+          </div>
+          <span class="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold">
+            {% if review.is_approved %}Approved{% else %}Pending{% endif %}
+          </span>
+        </div>
+        <form method="post" class="mt-4 flex flex-wrap gap-2">
+          {% csrf_token %}
+          <input type="hidden" name="review_id" value="{{ review.id }}">
+          {% if not review.is_approved %}
+            <button name="action" value="approve" class="btn btn__primary">Approve</button>
+          {% else %}
+            <button name="action" value="hide" class="btn btn__ghost">Hide</button>
+          {% endif %}
+          <button name="action"
+                  value="delete"
+                  class="btn btn__danger"
+                  onclick="return confirm('Delete this review?')">Delete</button>
+        </form>
+      </div>
+    {% empty %}
+      <div class="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center text-slate-500">No reviews yet.</div>
+    {% endfor %}
+  </div>
+  {% include "dashboard/components/pagination.html" %}
+{% endblock %}

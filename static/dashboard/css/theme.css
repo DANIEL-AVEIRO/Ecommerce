@@ -1,0 +1,445 @@
+html.theme-ready body,
+html.theme-ready header,
+html.theme-ready footer,
+html.theme-ready aside,
+html.theme-ready main,
+html.theme-ready #theme-toggle,
+html.theme-ready .dashboard__sidebar,
+html.theme-ready .dashboard__sidebar a,
+html.theme-ready .dashboard__sidebar .sidebar__user,
+html.theme-ready .dashboard__topbar,
+html.theme-ready .dashboard__topbar__icon,
+html.theme-ready .dashboard__topbar__chip,
+html.theme-ready .dashboard__topbar__user,
+html.theme-ready .dashboard__topbar__logout {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #0c0f14;
+  color: #f5f5f4;
+}
+
+/* Sidebar — light */
+.dashboard__sidebar {
+  background-color: #ffffff;
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+.dashboard__sidebar .sidebar__header,
+.dashboard__sidebar .sidebar__footer {
+  border-color: #e2e8f0;
+}
+
+.dashboard__sidebar .sidebar__kicker,
+.dashboard__sidebar .sidebar__label {
+  color: #94a3b8;
+}
+
+.dashboard__sidebar .sidebar__link {
+  color: #475569;
+}
+
+.dashboard__sidebar .sidebar__link:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.dashboard__sidebar .sidebar__link.is__active {
+  background-color: #0d9488;
+  color: #ffffff;
+}
+
+.dashboard__sidebar .sidebar__user {
+  background-color: #f1f5f9;
+}
+
+.dashboard__sidebar .sidebar__user__email {
+  color: #64748b;
+}
+
+/* Sidebar — dark */
+html.dark .dashboard__sidebar {
+  background-color: #141821;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+html.dark .dashboard__sidebar .sidebar__header,
+html.dark .dashboard__sidebar .sidebar__footer {
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+html.dark .dashboard__sidebar .sidebar__kicker,
+html.dark .dashboard__sidebar .sidebar__label {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+html.dark .dashboard__sidebar .sidebar__link {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+html.dark .dashboard__sidebar .sidebar__link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+html.dark .dashboard__sidebar .sidebar__link.is__active {
+  background-color: #0d9488;
+  color: #ffffff;
+}
+
+html.dark .dashboard__sidebar .sidebar__user {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+html.dark .dashboard__sidebar .sidebar__user__email {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Topbar — dark */
+html.dark .dashboard__topbar {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, rgba(22, 26, 34, 0.96) 0%, rgba(18, 22, 30, 0.94) 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+html.dark .dashboard__topbar__inner::after {
+  background: linear-gradient(90deg, #2dd4bf 0%, rgba(45, 212, 191, 0.2) 42%, transparent 72%);
+}
+
+html.dark .dashboard__topbar__kicker {
+  color: rgba(231, 229, 228, 0.4);
+}
+
+html.dark .dashboard__topbar__dot {
+  background: #2dd4bf;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.16);
+}
+
+html.dark .dashboard__topbar__icon {
+  background: #1a2030;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e7e5e4;
+  box-shadow: none;
+}
+
+html.dark .dashboard__topbar__icon:hover {
+  background: #252b38;
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+html.dark .dashboard__topbar__chip {
+  background: #1a2030;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e7e5e4;
+  box-shadow: none;
+}
+
+html.dark .dashboard__topbar__chip:hover {
+  background: rgba(13, 148, 136, 0.18);
+  border-color: rgba(45, 212, 191, 0.35);
+  color: #5eead4;
+  box-shadow: none;
+}
+
+html.dark .dashboard__topbar__chip .text-teal-700 {
+  color: #5eead4 !important;
+}
+
+html.dark .dashboard__topbar__user {
+  background: linear-gradient(180deg, #1a2030 0%, #161a22 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+html.dark .dashboard__topbar__role {
+  color: rgba(231, 229, 228, 0.45);
+}
+
+html.dark .dashboard__topbar__logout {
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+}
+
+html.dark .dashboard__topbar__logout:hover {
+  background: linear-gradient(180deg, #475569 0%, #334155 100%);
+}
+
+html.dark .bg-white,
+html.dark .bg-white\/90 {
+  background-color: #161a22 !important;
+}
+
+html.dark .bg-slate-100 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark thead.bg-slate-50,
+html.dark .bg-slate-50,
+html.dark .bg-slate-50\/50,
+html.dark .bg-slate-50\/80 {
+  background-color: #12161e !important;
+}
+
+html.dark .text-slate-900,
+html.dark .text-slate-700,
+html.dark .text-slate-600,
+html.dark .text-slate-500,
+html.dark .text-slate-400 {
+  color: #e7e5e4 !important;
+}
+
+html.dark .text-slate-500,
+html.dark .text-slate-400 {
+  color: rgba(231, 229, 228, 0.55) !important;
+}
+
+html.dark .border-slate-200,
+html.dark .border-slate-200\/80,
+html.dark .border-slate-100,
+html.dark .border-slate-300 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark .border-dashed {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* Form controls — dark */
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="image"]):not([type="reset"]),
+html.dark textarea,
+html.dark select {
+  background-color: #0c0f14 !important;
+  color: #e7e5e4 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: rgba(231, 229, 228, 0.35) !important;
+}
+
+/* Table row hover — works in both themes */
+.table__row__hover {
+  transition: background-color 0.15s ease;
+}
+
+html:not(.dark) .table__row__hover:hover {
+  background-color: #f1f5f9;
+}
+
+html.dark .table__row__hover:hover {
+  background-color: #252b38 !important;
+}
+
+html.dark tbody tr:hover {
+  background-color: #252b38 !important;
+}
+
+html.dark tbody tr.bg-rose-50\/70:hover,
+html.dark tbody tr.bg-rose-50:hover {
+  background-color: rgba(127, 29, 29, 0.45) !important;
+}
+
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-slate-50\/80:hover,
+html.dark .hover\:bg-white\/5:hover {
+  background-color: #252b38 !important;
+}
+
+html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+html.dark .bg-rose-50\/70,
+html.dark .bg-rose-50 {
+  background-color: rgba(127, 29, 29, 0.25) !important;
+}
+
+html.dark .bg-teal-50 {
+  background-color: rgba(13, 148, 136, 0.2) !important;
+}
+
+html.dark .text-teal-800,
+html.dark .text-teal-700 {
+  color: #5eead4 !important;
+}
+
+/* Toast — dark — solid, not translucent */
+html.dark [data-toast] {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+html.dark [data-toast].bg-red-50 {
+  background-color: #450a0a !important;
+}
+
+html.dark [data-toast].bg-emerald-50 {
+  background-color: #022c22 !important;
+}
+
+html.dark [data-toast].bg-white {
+  background-color: #1c212b !important;
+}
+
+html.dark .bg-red-50 {
+  background-color: rgba(127, 29, 29, 0.35) !important;
+}
+
+html.dark .text-red-800,
+html.dark .text-red-700,
+html.dark .text-red-600 {
+  color: #fecaca !important;
+}
+
+html.dark .border-red-200 {
+  border-color: rgba(248, 113, 113, 0.35) !important;
+}
+
+html.dark .bg-emerald-50 {
+  background-color: rgba(6, 78, 59, 0.35) !important;
+}
+
+html.dark .text-emerald-900,
+html.dark .text-emerald-700 {
+  color: #6ee7b7 !important;
+}
+
+html.dark .border-emerald-200 {
+  border-color: rgba(52, 211, 153, 0.35) !important;
+}
+
+html.dark .bg-stone-900\/10 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .text-stone-900,
+html.dark .text-stone-600 {
+  color: #e7e5e4 !important;
+}
+
+html.dark .border-stone-200 {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html.theme-ready [data-toast] {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+/* Buttons — dark */
+html.dark .btn__primary {
+  background: linear-gradient(180deg, #14b8a6 0%, #0f766e 100%);
+  color: #fff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 4px 14px rgba(13, 148, 136, 0.25);
+}
+
+html.dark .btn__primary:hover {
+  background: linear-gradient(180deg, #2dd4bf 0%, #0d9488 100%);
+}
+
+html.dark .btn__secondary {
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+  color: #fff;
+}
+
+html.dark .btn__ghost {
+  background: #1a2030;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e7e5e4;
+  box-shadow: none;
+}
+
+html.dark .btn__ghost:hover {
+  background: #252b38;
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+html.dark .btn__danger {
+  background: rgba(127, 29, 29, 0.25);
+  border-color: rgba(251, 113, 133, 0.35);
+  color: #fda4af;
+  box-shadow: none;
+}
+
+html.dark .btn__danger:hover {
+  background: rgba(127, 29, 29, 0.4);
+  border-color: rgba(251, 113, 133, 0.5);
+  color: #fecdd3;
+}
+
+html.theme-ready .btn {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):focus,
+html.dark textarea:focus,
+html.dark select:focus {
+  border-color: #2dd4bf !important;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.28) !important;
+}
+
+html.dark input[type="checkbox"],
+html.dark input[type="radio"] {
+  accent-color: #2dd4bf;
+}
+
+#theme-toggle .icon__sun,
+#theme-toggle .icon__moon {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#theme-toggle .icon__sun {
+  opacity: 0;
+  transform: scale(0.6) rotate(-90deg);
+  pointer-events: none;
+}
+
+#theme-toggle .icon__moon {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+html.dark #theme-toggle .icon__sun {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  pointer-events: auto;
+}
+
+html.dark #theme-toggle .icon__moon {
+  opacity: 0;
+  transform: scale(0.6) rotate(90deg);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-ready body,
+  html.theme-ready header,
+  html.theme-ready footer,
+  html.theme-ready aside,
+  html.theme-ready main,
+  html.theme-ready #theme-toggle {
+    transition: none !important;
+  }
+}

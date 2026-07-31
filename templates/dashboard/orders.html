@@ -1,0 +1,43 @@
+{% extends "dashboard/components/base.html" %}
+{% load humanize %}
+{% block content %}
+  <div class="mb-5">
+    <p class="text-sm text-slate-500">Filter and open orders to update status or payment.</p>
+  </div>
+  {% include "dashboard/components/table_filters.html" %}
+  <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-3 font-semibold">Order</th>
+            <th class="px-4 py-3 font-semibold">Customer</th>
+            <th class="px-4 py-3 font-semibold">Status</th>
+            <th class="px-4 py-3 font-semibold">Payment</th>
+            <th class="px-4 py-3 font-semibold">Total</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for order in orders %}
+            <tr class="table__row__hover">
+              <td class="px-4 py-3">
+                <a href="{% url 'dashboard_order_detail' order.order_number %}"
+                   class="font-semibold text-teal-700 hover:underline">{{ order.order_number }}</a>
+                <p class="text-xs text-slate-400">{{ order.created_at|date:"M j, Y" }}</p>
+              </td>
+              <td class="px-4 py-3">{{ order.username }}</td>
+              <td class="px-4 py-3"><span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium">{{ order.get_status_display }}</span></td>
+              <td class="px-4 py-3">{{ order.get_payment_status_display }}</td>
+              <td class="px-4 py-3 font-semibold">{{ order.total|intcomma }} Ks</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="px-4 py-10 text-center text-slate-500">No orders found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% include "dashboard/components/pagination.html" %}
+{% endblock %}

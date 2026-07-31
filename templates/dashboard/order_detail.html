@@ -1,0 +1,118 @@
+{% extends "dashboard/components/base.html" %}
+{% load humanize %}
+{% block content %}
+  <a href="{% url 'dashboard_orders' %}"
+     class="inline-flex items-center gap-2 text-sm font-semibold text-teal-700 hover:text-teal-600">
+    <i data-lucide="arrow-left" class="h-4 w-4"></i>
+    Back to orders
+  </a>
+  <p class="mt-2 text-sm text-slate-500">Placed {{ order.created_at|date:"M j, Y H:i" }}</p>
+  <div class="mt-6 grid gap-6 xl:grid-cols-2">
+    <section class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+      <h2 class="font-display text-lg font-bold">Update status</h2>
+      <form method="post" class="mt-4 space-y-3">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_status">
+        <select name="status"
+                class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+          {% for value, label in statuses %}
+            <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <input name="tracking_number"
+               value="{{ order.tracking_number }}"
+               class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+               placeholder="Tracking number (optional)">
+        <input name="note"
+               class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+               placeholder="Optional note">
+        <button class="btn btn__primary">Save status</button>
+      </form>
+    </section>
+    <section class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+      <h2 class="font-display text-lg font-bold">Packing & shipping</h2>
+      <form method="post" class="mt-4 space-y-3">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_shipping">
+        <input name="tracking_number"
+               value="{{ order.tracking_number }}"
+               class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+               placeholder="Tracking number">
+        <input name="note"
+               class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+               placeholder="Optional note">
+        <div class="flex flex-wrap gap-2">
+          <button name="mark_packed" value="1" class="btn btn__secondary">Mark packed</button>
+          <button name="mark_shipped" value="1" class="btn btn__primary">Mark shipped</button>
+        </div>
+      </form>
+    </section>
+    <section class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+      <h2 class="font-display text-lg font-bold">Payment</h2>
+      <p class="mt-2 text-sm text-slate-600">Method: {{ order.payment_label }}</p>
+      <p class="mt-1 text-sm text-slate-600">Status: {{ order.get_payment_status_display }}</p>
+      {% if order.payment_slip %}
+        <img src="{{ order.payment_slip.url }}"
+             alt="Screenshot"
+             class="mt-3 max-h-52 rounded-lg border border-slate-200">
+      {% endif %}
+      <form method="post" class="mt-4 space-y-3">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_payment">
+        <select name="payment_status"
+                class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+          {% for value, label in payment_statuses %}
+            <option value="{{ value }}"
+                    {% if order.payment_status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn btn__secondary">Save payment</button>
+      </form>
+    </section>
+  </div>
+  <section class="mt-6 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+    <h2 class="font-display text-lg font-bold">Items & customer</h2>
+    <ul class="mt-4 space-y-2 text-sm">
+      {% for item in order.items.all %}
+        <li class="flex justify-between gap-3 border-b border-slate-100 py-2">
+          <span>{{ item.product_name }}{% if item.variant_label %} ({{ item.variant_label }}){% endif %} × {{ item.quantity }}</span>
+          <span class="font-medium">{{ item.line_total|intcomma }} Ks</span>
+        </li>
+      {% endfor %}
+    </ul>
+    <dl class="mt-4 space-y-1 text-sm">
+      <div class="flex justify-between">
+        <dt class="text-slate-500">Subtotal</dt>
+        <dd>
+          {{ order.subtotal|intcomma }} Ks
+        </dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-slate-500">Discount</dt>
+        <dd>
+          −{{ order.discount_amount|intcomma }} Ks
+        </dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-slate-500">Shipping</dt>
+        <dd>
+          {{ order.shipping_fee|intcomma }} Ks
+        </dd>
+      </div>
+      <div class="flex justify-between border-t border-slate-100 pt-2 text-base font-semibold">
+        <dt>Total</dt>
+        <dd>
+          {{ order.total|intcomma }} Ks
+        </dd>
+      </div>
+    </dl>
+    <p class="mt-4 text-sm leading-relaxed text-slate-600">
+      {{ order.username }} · {{ order.phone }} · {{ order.email }}
+      <br>
+      {{ order.address }}, {{ order.city }}, {{ order.region }}
+    </p>
+    {% if order.tracking_number %}
+      <p class="mt-2 text-sm font-medium text-teal-700">Tracking: {{ order.tracking_number }}</p>
+    {% endif %}
+  </section>
+{% endblock %}

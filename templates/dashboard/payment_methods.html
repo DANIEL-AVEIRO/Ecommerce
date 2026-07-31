@@ -1,0 +1,110 @@
+{% extends "dashboard/components/base.html" %}
+{% block content %}
+  {% include "dashboard/components/table_filters.html" %}
+  <div class="grid gap-6 xl:grid-cols-5">
+    <form method="post"
+          class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm xl:col-span-2">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create">
+      <h2 class="font-display text-lg font-bold">Add payment method</h2>
+      <div class="mt-4 space-y-3">
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Name</label>
+          <input name="name"
+                 required
+                 class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                 placeholder="KBZ Pay">
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Account info</label>
+          <textarea name="account_info"
+                    rows="3"
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                    placeholder="Phone / account number"></textarea>
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Instructions</label>
+          <textarea name="instructions"
+                    rows="3"
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                    placeholder="How customers should pay"></textarea>
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Sort order</label>
+          <input name="sort_order"
+                 type="number"
+                 min="0"
+                 value="0"
+                 class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+        </div>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="requires_slip" checked>
+          Requires payment screenshot
+        </label>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="is_cod">
+          Cash on delivery
+        </label>
+        <button class="btn btn__primary btn__block">Create</button>
+      </div>
+    </form>
+    <div class="space-y-3 xl:col-span-3">
+      {% for method in methods %}
+        <div class="rounded-2xl border border-slate-200/80 bg-white px-5 py-4 shadow-sm">
+          <form method="post" class="space-y-3">
+            {% csrf_token %}
+            <input type="hidden" name="method_id" value="{{ method.id }}">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <input name="name"
+                     value="{{ method.name }}"
+                     class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold">
+              <p class="text-sm text-slate-500">
+                {% if method.is_active %}Active{% else %}Off{% endif %}
+                {% if method.is_cod %}· COD{% endif %}
+                {% if method.requires_slip %}· Needs screenshot{% endif %}
+              </p>
+            </div>
+            <textarea name="account_info"
+                      rows="2"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      placeholder="Account info">{{ method.account_info }}</textarea>
+            <textarea name="instructions"
+                      rows="2"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      placeholder="Instructions">{{ method.instructions }}</textarea>
+            <input name="sort_order"
+                   type="number"
+                   min="0"
+                   value="{{ method.sort_order }}"
+                   class="w-40 rounded-lg border border-slate-200 px-3 py-2 text-sm">
+            <div class="flex flex-wrap gap-4 text-sm">
+              <label class="flex items-center gap-2">
+                <input type="checkbox"
+                       name="requires_slip"
+                       {% if method.requires_slip %}checked{% endif %}>
+                Screenshot required
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" name="is_cod" {% if method.is_cod %}checked{% endif %}>
+                COD
+              </label>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button name="action" value="update" class="btn btn__secondary">Save</button>
+              <button name="action" value="toggle" class="btn btn__ghost">
+                {% if method.is_active %}Deactivate{% else %}Activate{% endif %}
+              </button>
+              <button name="action"
+                      value="delete"
+                      class="btn btn__danger"
+                      onclick="return confirm('Delete this payment method?')">Delete</button>
+            </div>
+          </form>
+        </div>
+      {% empty %}
+        <div class="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center text-slate-500">No payment methods yet.</div>
+      {% endfor %}
+      {% include "dashboard/components/pagination.html" %}
+    </div>
+  </div>
+{% endblock %}

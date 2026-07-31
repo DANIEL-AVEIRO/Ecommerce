@@ -58,7 +58,10 @@ class CartItemModel(BaseModel):
 
     def save(self, *args, **kwargs):
         if self.unit_price is None:
-            self.unit_price = self.variant.price if self.variant else self.product.price
+            if self.variant:
+                self.unit_price = self.variant.price
+            else:
+                self.unit_price = self.product.selling_price
         super().save(*args, **kwargs)
 
     @property

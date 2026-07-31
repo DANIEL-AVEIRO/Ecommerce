@@ -1,0 +1,88 @@
+{% extends "dashboard/components/base.html" %}
+{% load humanize %}
+{% block content %}
+  <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+    <p class="text-sm text-slate-500">Create, edit, or remove store products.</p>
+    <a href="{% url 'dashboard_product_create' %}" class="btn btn__primary">
+      <i data-lucide="plus" class="h-4 w-4"></i>
+      Add product
+    </a>
+  </div>
+  {% include "dashboard/components/table_filters.html" %}
+  <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-3 font-semibold">Product</th>
+            <th class="px-4 py-3 font-semibold">Category</th>
+            <th class="px-4 py-3 font-semibold">Price</th>
+            <th class="px-4 py-3 font-semibold">Stock</th>
+            <th class="px-4 py-3 font-semibold">Status</th>
+            <th class="px-4 py-3 font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for product in products %}
+            <tr class="table__row__hover">
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  {% if product.primary_image_url %}
+                    <img src="{{ product.primary_image_url }}"
+                         alt=""
+                         class="h-10 w-10 rounded-lg object-cover">
+                  {% else %}
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
+                      <i data-lucide="image" class="h-4 w-4"></i>
+                    </div>
+                  {% endif %}
+                  <div class="min-w-0">
+                    <a href="{% url 'dashboard_product_edit' product.id %}"
+                       class="font-semibold text-teal-700 hover:underline">{{ product.name }}</a>
+                    <p class="text-xs text-slate-400">{{ product.sku }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3">{{ product.category.name }}</td>
+              <td class="px-4 py-3 font-medium">{{ product.selling_price|intcomma }} Ks</td>
+              <td class="px-4 py-3">{{ product.total_stock }}</td>
+              <td class="px-4 py-3">
+                {% if product.is_active %}
+                  <span class="rounded-md bg-teal-50 px-2 py-1 text-xs font-medium text-teal-800">Active</span>
+                {% else %}
+                  <span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500">Hidden</span>
+                {% endif %}
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex flex-nowrap items-center gap-2 whitespace-nowrap">
+                  <a href="{% url 'dashboard_product_edit' product.id %}"
+                     class="btn btn__ghost btn__sm">Edit</a>
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="action" value="toggle_active">
+                    <button class="btn btn__ghost btn__sm">
+                      {% if product.is_active %}Hide{% else %}Show{% endif %}
+                    </button>
+                  </form>
+                  <form method="post"
+                        onsubmit="return confirm('Delete this product?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="action" value="delete">
+                    <button class="btn btn__danger btn__sm">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="px-4 py-10 text-center text-slate-500">No products yet. Add your first product.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% include "dashboard/components/pagination.html" %}
+{% endblock %}

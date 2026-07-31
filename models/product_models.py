@@ -1,4 +1,7 @@
+from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.utils.text import slugify
 from models.base_models import BaseModel
 
@@ -23,6 +26,11 @@ class CategoryModel(BaseModel):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        if self.image:
+            self.image.delete(save=False)
+        super().delete(*args, **kwargs)
+
 
 class ProductModel(BaseModel):
     category = models.ForeignKey(
@@ -33,12 +41,8 @@ class ProductModel(BaseModel):
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True)
     description = models.TextField(blank=True)
-    price = models.BigIntegerField()
-    compare_at_price = models.BigIntegerField(
-        blank=True,
-        null=True,
-        help_text="Original price shown when on sale",
-    )
+    regular_price = models.BigIntegerField()
+    sale_price = models.BigIntegerField(blank=True, null=True)
     sku = models.CharField(max_length=64, unique=True)
     material = models.CharField(max_length=120, blank=True)
     is_featured = models.BooleanField(default=False)
@@ -55,9 +59,37 @@ class ProductModel(BaseModel):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        for image in list(self.images.all()):
+            image.delete()
+        super().delete(*args, **kwargs)
+
     @property
     def is_on_sale(self):
-        return self.compare_at_price is not None and self.compare_at_price > self.price
+        if self.sale_price is None:
+            return False
+        if self.sale_price < self.regular_price:
+            return True
+        return False
+
+    @property
+    def selling_price(self):
+        if self.is_on_sale:
+            return self.sale_price
+        return self.regular_price
+
+    @property
+    def total_stock(self):
+        total = 0
+        for variant in self.variants.filter(is_active=True):
+            total = total + variant.stock
+        return total
+
+    @property
+    def in_stock(self):
+        if self.variants.filter(is_active=True).count() > 0:
+            return self.total_stock > 0
+        return True
 
     @property
     def primary_image_url(self):
@@ -89,6 +121,11 @@ class ProductImageModel(BaseModel):
     def __str__(self):
         return f"{self.product.name} image"
 
+    def delete(self, *args, **kwargs):
+        if self.image:
+            self.image.delete(save=False)
+        super().delete(*args, **kwargs)
+
 
 class ProductVariantModel(BaseModel):
     product = models.ForeignKey(
@@ -113,12 +150,45 @@ class ProductVariantModel(BaseModel):
 
     @property
     def price(self):
-        return (
-            self.price_override
-            if self.price_override is not None
-            else self.product.price
-        )
+        if self.price_override is not None:
+            return self.price_override
+        return self.product.selling_price
 
     @property
     def in_stock(self):
         return self.stock > 0
+
+
+class ProductReviewModel(BaseModel):
+    product = models.ForeignKey(
+        ProductModel,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+    )
+    rating = models.PositiveIntegerField(default=5)
+    comment = models.TextField()
+    is_approved = models.BooleanField(default=False)
+    is_verified_purchase = models.BooleanField(default=False)
+
+    class Meta(BaseModel.Meta):
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.product.name} — {self.rating} stars"
+
+
+@receiver(pre_delete, sender=CategoryModel)
+def delete_category_image_file(sender, instance, **kwargs):
+    if instance.image:
+        instance.image.delete(save=False)
+
+
+@receiver(pre_delete, sender=ProductImageModel)
+def delete_product_image_file(sender, instance, **kwargs):
+    if instance.image:
+        instance.image.delete(save=False)

@@ -10,12 +10,20 @@ class OrderStatus(models.TextChoices):
     CANCELLED = "cancelled", "Cancelled"
 
 
-class PaymentMethod(models.TextChoices):
-    COD = "cod", "Cash on delivery"
-    KBZ = "kbz", "KBZ Pay / Wave Money"
-    BANK = "card", "Bank transfer"
+class PaymentStatus(models.TextChoices):
+    PENDING = "pending", "Pending"
+    PAID = "paid", "Paid"
+    FAILED = "failed", "Failed"
+    REFUNDED = "refunded", "Refunded"
 
 
 class ShippingMethod(models.TextChoices):
     STANDARD = "standard", "Standard"
     EXPRESS = "express", "Express"
+
+
+class ReturnStatus(models.TextChoices):
+    PENDING = "pending", "Pending"
+    APPROVED = "approved", "Approved"
+    REJECTED = "rejected", "Rejected"
+    COMPLETED = "completed", "Completed"

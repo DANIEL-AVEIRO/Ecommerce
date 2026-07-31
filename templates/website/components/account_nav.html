@@ -1,8 +1,14 @@
 <nav class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 text-sm lg:mx-0 lg:block lg:space-y-1 lg:overflow-visible lg:px-0 lg:pb-0">
-  <a href="{% url 'account' %}" class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 transition lg:block {% if active == 'overview' %}bg-emerald-700/10 font-semibold text-emerald-700{% else %}text-stone-900/70 hover:bg-stone-100{% endif %}">Overview</a>
-  <a href="{% url 'account_orders' %}" class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 transition lg:block {% if active == 'orders' %}bg-emerald-700/10 font-semibold text-emerald-700{% else %}text-stone-900/70 hover:bg-stone-100{% endif %}">Orders</a>
-  <a href="{% url 'account_profile' %}" class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 transition lg:block {% if active == 'profile' %}bg-emerald-700/10 font-semibold text-emerald-700{% else %}text-stone-900/70 hover:bg-stone-100{% endif %}">Profile</a>
-  <a href="{% url 'account_addresses' %}" class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 transition lg:block {% if active == 'addresses' %}bg-emerald-700/10 font-semibold text-emerald-700{% else %}text-stone-900/70 hover:bg-stone-100{% endif %}">Addresses</a>
-  <a href="{% url 'wishlist' %}" class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 transition lg:block {% if active == 'wishlist' %}bg-emerald-700/10 font-semibold text-emerald-700{% else %}text-stone-900/70 hover:bg-stone-100{% endif %}">Wishlist</a>
-  <a href="{% url 'logout' %}" class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 text-stone-900/70 transition hover:bg-stone-100 lg:block">Sign out</a>
+  <a href="{% url 'account' %}"
+     class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 transition lg:block {% if active == 'overview' %}bg-emerald-700/10 font-semibold text-emerald-700{% else %}text-stone-900/70 hover:bg-stone-100{% endif %}">Overview</a>
+  <a href="{% url 'account_orders' %}"
+     class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 transition lg:block {% if active == 'orders' %}bg-emerald-700/10 font-semibold text-emerald-700{% else %}text-stone-900/70 hover:bg-stone-100{% endif %}">Orders</a>
+  <a href="{% url 'account_profile' %}"
+     class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 transition lg:block {% if active == 'profile' %}bg-emerald-700/10 font-semibold text-emerald-700{% else %}text-stone-900/70 hover:bg-stone-100{% endif %}">Profile</a>
+  <a href="{% url 'account_addresses' %}"
+     class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 transition lg:block {% if active == 'addresses' %}bg-emerald-700/10 font-semibold text-emerald-700{% else %}text-stone-900/70 hover:bg-stone-100{% endif %}">Addresses</a>
+  <a href="{% url 'wishlist' %}"
+     class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 transition lg:block {% if active == 'wishlist' %}bg-emerald-700/10 font-semibold text-emerald-700{% else %}text-stone-900/70 hover:bg-stone-100{% endif %}">Wishlist</a>
+  <a href="{% url 'logout' %}"
+     class="shrink-0 whitespace-nowrap rounded-md px-3 py-2 text-stone-900/70 transition hover:bg-stone-100 lg:block">Sign out</a>
 </nav>

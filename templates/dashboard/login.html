@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin sign in — DANIEL</title>
+    <link rel="stylesheet" href="{% static 'dashboard/css/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{% static 'dashboard/js/tailwind-config.js' %}"></script>
+  </head>
+  <body class="min-h-screen bg-slate-100 font-sans text-slate-900 antialiased">
+    <div class="grid min-h-screen lg:grid-cols-2">
+      <aside class="relative hidden overflow-hidden lg:block">
+        <div class="absolute inset-0 bg-cover bg-center"
+             style="background-image: url('{% static 'dashboard/images/login.jpg' %}')"
+             aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0f141c]/90 via-[#0f141c]/55 to-[#0f141c]/35"
+             aria-hidden="true"></div>
+        <div class="relative flex h-full flex-col justify-between p-10 text-white xl:p-14">
+          <p class="font-display text-2xl font-extrabold tracking-tight text-teal-300">DANIEL</p>
+          <div>
+            <h1 class="font-display text-5xl font-extrabold leading-none tracking-tight xl:text-6xl">Admin</h1>
+            <p class="mt-5 max-w-sm text-base leading-relaxed text-white/75">
+              Sign in to manage orders, stock, payments, coupons, and returns.
+            </p>
+          </div>
+          <p class="text-xs tracking-wide text-white/45">Staff access only</p>
+        </div>
+      </aside>
+      <main class="flex items-center justify-center px-4 py-12 sm:px-8">
+        <div class="w-full max-w-md">
+          <div class="mb-8 lg:hidden">
+            <p class="font-display text-2xl font-extrabold text-teal-700">DANIEL</p>
+            <p class="mt-1 text-sm text-slate-500">Admin dashboard</p>
+          </div>
+          <h2 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Sign in</h2>
+          <p class="mt-2 text-sm text-slate-500">Use your staff account to continue.</p>
+          {% include "dashboard/components/message.html" %}
+          <form action="{% url 'dashboard_login' %}"
+                method="post"
+                class="mt-8 space-y-5">
+            {% csrf_token %}
+            <div>
+              <label for="email" class="mb-1.5 block text-sm font-medium text-slate-700">Email</label>
+              <input id="email"
+                     name="email"
+                     type="email"
+                     required
+                     autocomplete="username"
+                     placeholder="staff@example.com"
+                     class="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-3 text-sm outline-none transition focus:border-teal-700 focus:ring-2 focus:ring-teal-700/15">
+            </div>
+            <div>
+              <label for="password"
+                     class="mb-1.5 block text-sm font-medium text-slate-700">Password</label>
+              <input id="password"
+                     name="password"
+                     type="password"
+                     required
+                     autocomplete="current-password"
+                     placeholder="Enter your password"
+                     class="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-3 text-sm outline-none transition focus:border-teal-700 focus:ring-2 focus:ring-teal-700/15">
+            </div>
+            <button type="submit" class="btn btn__secondary btn__block">
+              Sign in to dashboard
+            </button>
+          </form>
+          <p class="mt-8 text-center text-sm text-slate-500">
+            <a href="{% url 'index' %}"
+               class="font-semibold text-teal-700 hover:text-teal-600">← Back to storefront</a>
+          </p>
+        </div>
+      </main>
+    </div>
+    <script src="{% static 'dashboard/js/main.js' %}"></script>
+  </body>
+</html>

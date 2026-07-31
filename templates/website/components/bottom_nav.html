@@ -1,54 +1,38 @@
-<nav
-  class="fixed inset-x-0 bottom-0 z-50 border-t border-stone-900/10 bg-stone-50/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
-  aria-label="Mobile"
->
+<nav class="fixed inset-x-0 bottom-0 z-50 border-t border-stone-900/10 bg-stone-50/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md transition-[transform,opacity,background-color,border-color,color] duration-300 ease-out lg:hidden"
+     aria-label="Mobile">
   <div class="mx-auto grid h-16 max-w-lg grid-cols-5">
-    <a
-      href="{% url 'index' %}"
-      class="flex flex-col items-center justify-center gap-0.5 transition active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 {% if request.resolver_match.url_name == 'index' %}text-emerald-700{% else %}text-stone-900/55 hover:text-stone-900{% endif %}"
-    >
+    <a href="{% url 'index' %}"
+       class="flex flex-col items-center justify-center gap-0.5 transition duration-200 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 {% if request.resolver_match.url_name == 'index' %}text-emerald-700{% else %}text-stone-900/55 hover:text-stone-900{% endif %}">
       <i data-lucide="home" class="h-5 w-5"></i>
       <span class="text-[10px] font-semibold tracking-wide">Home</span>
     </a>
-
-    <a
-      href="{% url 'shop' %}"
-      class="flex flex-col items-center justify-center gap-0.5 transition active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 {% if request.resolver_match.url_name == 'shop' or request.resolver_match.url_name == 'category' or request.resolver_match.url_name == 'product_detail' or request.resolver_match.url_name == 'search' %}text-emerald-700{% else %}text-stone-900/55 hover:text-stone-900{% endif %}"
-    >
+    <a href="{% url 'shop' %}"
+       class="flex flex-col items-center justify-center gap-0.5 transition duration-200 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 {% if request.resolver_match.url_name == 'shop' or request.resolver_match.url_name == 'category' or request.resolver_match.url_name == 'product_detail' or request.resolver_match.url_name == 'search' %}text-emerald-700{% else %}text-stone-900/55 hover:text-stone-900{% endif %}">
       <i data-lucide="store" class="h-5 w-5"></i>
       <span class="text-[10px] font-semibold tracking-wide">Shop</span>
     </a>
-
-    <a
-      href="{% url 'cart' %}"
-      class="relative flex flex-col items-center justify-center gap-0.5 transition active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 {% if request.resolver_match.url_name == 'cart' or request.resolver_match.url_name == 'cart_empty' or request.resolver_match.url_name == 'checkout' %}text-emerald-700{% else %}text-stone-900/55 hover:text-stone-900{% endif %}"
-    >
+    <a href="{% url 'cart' %}"
+       class="relative flex flex-col items-center justify-center gap-0.5 transition duration-200 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 {% if request.resolver_match.url_name == 'cart' or request.resolver_match.url_name == 'cart_empty' or request.resolver_match.url_name == 'checkout' %}text-emerald-700{% else %}text-stone-900/55 hover:text-stone-900{% endif %}">
       <span class="relative">
         <i data-lucide="shopping-bag" class="h-5 w-5"></i>
         {% if cart_count %}
-        <span class="absolute -right-2.5 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-700 px-1 text-[9px] font-bold text-white">{{ cart_count }}</span>
+          <span class="absolute -right-2.5 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-700 px-1 text-[9px] font-bold text-white">{{ cart_count }}</span>
         {% endif %}
       </span>
       <span class="text-[10px] font-semibold tracking-wide">Cart</span>
     </a>
-
-    <a
-      href="{% url 'wishlist' %}"
-      class="flex flex-col items-center justify-center gap-0.5 transition active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 {% if request.resolver_match.url_name == 'wishlist' %}text-emerald-700{% else %}text-stone-900/55 hover:text-stone-900{% endif %}"
-    >
+    <a href="{% url 'wishlist' %}"
+       class="flex flex-col items-center justify-center gap-0.5 transition duration-200 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 {% if request.resolver_match.url_name == 'wishlist' %}text-emerald-700{% else %}text-stone-900/55 hover:text-stone-900{% endif %}">
       <span class="relative">
         <i data-lucide="heart" class="h-5 w-5"></i>
         {% if wishlist_count %}
-        <span class="absolute -right-2.5 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-700 px-1 text-[9px] font-bold text-white">{{ wishlist_count }}</span>
+          <span class="absolute -right-2.5 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-700 px-1 text-[9px] font-bold text-white">{{ wishlist_count }}</span>
         {% endif %}
       </span>
       <span class="text-[10px] font-semibold tracking-wide">Saved</span>
     </a>
-
-    <a
-      href="{% if user.is_authenticated %}{% url 'account' %}{% else %}{% url 'login' %}{% endif %}"
-      class="flex flex-col items-center justify-center gap-0.5 transition active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 {% if request.resolver_match.url_name == 'account' or request.resolver_match.url_name == 'account_orders' or request.resolver_match.url_name == 'account_order_detail' or request.resolver_match.url_name == 'account_profile' or request.resolver_match.url_name == 'account_addresses' or request.resolver_match.url_name == 'login' or request.resolver_match.url_name == 'register' %}text-emerald-700{% else %}text-stone-900/55 hover:text-stone-900{% endif %}"
-    >
+    <a href="{% if user.is_authenticated %}{% url 'account' %}{% else %}{% url 'login' %}{% endif %}"
+       class="flex flex-col items-center justify-center gap-0.5 transition duration-200 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 {% if request.resolver_match.url_name == 'account' or request.resolver_match.url_name == 'account_orders' or request.resolver_match.url_name == 'account_order_detail' or request.resolver_match.url_name == 'account_profile' or request.resolver_match.url_name == 'account_addresses' or request.resolver_match.url_name == 'login' or request.resolver_match.url_name == 'register' %}text-emerald-700{% else %}text-stone-900/55 hover:text-stone-900{% endif %}">
       <i data-lucide="user" class="h-5 w-5"></i>
       <span class="text-[10px] font-semibold tracking-wide">{% if user.is_authenticated %}Account{% else %}Sign in{% endif %}</span>
     </a>

@@ -1,5 +1,4 @@
-from models.cart_models import CartModel
-from models.account_models import WishlistModel
+from core.models import CartModel, WishlistModel
 
 
 def storefront_context(request):

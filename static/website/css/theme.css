@@ -1,0 +1,353 @@
+/* Theme transition — enabled after first paint to avoid flash */
+html.theme-ready body,
+html.theme-ready header,
+html.theme-ready footer,
+html.theme-ready nav,
+html.theme-ready main,
+html.theme-ready aside,
+html.theme-ready .field,
+html.theme-ready .btn__primary,
+html.theme-ready .btn__dark,
+html.theme-ready .btn__ghost,
+html.theme-ready [data-toast],
+html.theme-ready #mobile-menu,
+html.theme-ready #theme-toggle {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    box-shadow 0.35s ease,
+    fill 0.35s ease;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #0c0f14;
+  color: #f5f5f4;
+}
+
+/* Common light backgrounds → dark surfaces */
+html.dark .bg-white,
+html.dark .bg-white\/70,
+html.dark .bg-white\/80,
+html.dark .bg-stone-50,
+html.dark .bg-stone-50\/90,
+html.dark .bg-stone-50\/95,
+html.dark .bg-stone-100,
+html.dark .bg-stone-100\/50,
+html.dark .bg-stone-100\/60,
+html.dark .bg-stone-100\/70,
+html.dark .bg-stone-200,
+html.dark .bg-stone-200\/80 {
+  background-color: #161a22 !important;
+}
+
+html.dark .bg-stone-300\/40 {
+  background-color: rgba(42, 51, 68, 0.5) !important;
+}
+
+html.dark .from-stone-50,
+html.dark .to-stone-100,
+html.dark .via-stone-50 {
+  --tw-gradient-from: #0c0f14 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(12 15 20 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+html.dark .bg-gradient-to-b.from-stone-50,
+html.dark .bg-gradient-to-br.from-stone-50 {
+  background-image: linear-gradient(to bottom, #0c0f14, #12161e) !important;
+}
+
+html.dark .to-emerald-50\/40 {
+  --tw-gradient-to: rgba(6, 78, 59, 0.15) var(--tw-gradient-to-position);
+}
+
+/* Text */
+html.dark .text-stone-900,
+html.dark .text-stone-900\/80,
+html.dark .text-stone-900\/70,
+html.dark .text-stone-900\/65,
+html.dark .text-stone-900\/60,
+html.dark .text-stone-900\/55,
+html.dark .text-stone-900\/50,
+html.dark .text-stone-900\/45,
+html.dark .text-stone-900\/40,
+html.dark .text-stone-900\/35,
+html.dark .text-stone-600,
+html.dark .text-stone-500,
+html.dark .text-stone-400 {
+  color: #e7e5e4 !important;
+}
+
+html.dark .text-stone-900\/70,
+html.dark .text-stone-900\/65,
+html.dark .text-stone-900\/60,
+html.dark .text-stone-900\/55 {
+  color: rgba(231, 229, 228, 0.72) !important;
+}
+
+html.dark .text-stone-900\/50,
+html.dark .text-stone-900\/45,
+html.dark .text-stone-900\/40 {
+  color: rgba(231, 229, 228, 0.5) !important;
+}
+
+html.dark .placeholder\:text-stone-900\/30::placeholder,
+html.dark .placeholder\:text-stone-900\/40::placeholder {
+  color: rgba(231, 229, 228, 0.35) !important;
+}
+
+/* Borders */
+html.dark .border-stone-900\/5,
+html.dark .border-stone-900\/10,
+html.dark .border-stone-900\/15,
+html.dark .border-stone-200,
+html.dark .border-stone-100 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .divide-stone-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Hover surfaces */
+html.dark .hover\:bg-stone-100:hover,
+html.dark .hover\:bg-white:hover,
+html.dark .hover\:bg-stone-50:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+html.dark .hover\:text-stone-900:hover,
+html.dark .hover\:text-stone-50:hover {
+  color: #fff !important;
+}
+
+/* Forms / cards */
+html.dark .field {
+  background: #12161e;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f5f5f4;
+}
+
+html.dark .field::placeholder {
+  color: rgba(245, 245, 244, 0.35);
+}
+
+html.dark .field:focus,
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):focus,
+html.dark textarea:focus,
+html.dark select:focus {
+  border-color: #34d399 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.28) !important;
+}
+
+html.dark input[type="checkbox"],
+html.dark input[type="radio"] {
+  accent-color: #34d399;
+}
+
+html.dark .label {
+  color: rgba(245, 245, 244, 0.75);
+}
+
+html.dark .btn__ghost {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #f5f5f4;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: none;
+}
+
+html.dark .btn__ghost:hover {
+  border-color: #34d399;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.08);
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.12);
+}
+
+html.dark .btn__dark {
+  background: linear-gradient(180deg, #fafaf9 0%, #e7e5e4 100%);
+  color: #0c0f14;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+html.dark .btn__dark:hover {
+  background: linear-gradient(180deg, #6ee7b7 0%, #34d399 100%);
+  color: #0c0f14;
+}
+
+html.dark .btn__primary {
+  background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.14) inset,
+    0 6px 18px rgba(4, 120, 87, 0.3);
+}
+
+html.dark .btn__primary:hover {
+  background: linear-gradient(180deg, #34d399 0%, #059669 100%);
+}
+
+/* Emerald accents stay readable */
+html.dark .text-emerald-700,
+html.dark .text-emerald-800\/70,
+html.dark .hover\:text-emerald-700:hover,
+html.dark .hover\:text-emerald-600:hover {
+  color: #34d399 !important;
+}
+
+html.dark .bg-emerald-700\/10,
+html.dark .bg-emerald-700\/15 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+html.dark .border-emerald-700\/20,
+html.dark .border-emerald-200 {
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+html.dark .text-emerald-900,
+html.dark .bg-emerald-50,
+html.dark .bg-emerald-700\/10 {
+  color: #a7f3d0;
+}
+
+html.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+
+/* Theme toggle icons */
+#theme-toggle .icon__sun,
+#theme-toggle .icon__moon {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#theme-toggle .icon__sun {
+  opacity: 0;
+  transform: scale(0.6) rotate(-90deg);
+  pointer-events: none;
+}
+
+#theme-toggle .icon__moon {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+html.dark #theme-toggle .icon__sun {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  pointer-events: auto;
+}
+
+html.dark #theme-toggle .icon__moon {
+  opacity: 0;
+  transform: scale(0.6) rotate(90deg);
+  pointer-events: none;
+}
+
+/* Mobile menu dark */
+html.dark #mobile-menu {
+  background-color: rgba(18, 22, 30, 0.96);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Toast dark — solid, not translucent */
+html.dark [data-toast] {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+html.dark [data-toast].bg-red-50 {
+  background-color: #450a0a !important;
+}
+
+html.dark [data-toast].bg-emerald-50 {
+  background-color: #022c22 !important;
+}
+
+html.dark [data-toast].bg-white {
+  background-color: #1c212b !important;
+}
+
+html.dark .star__icon {
+  fill: #2a303b;
+  stroke: #57534e;
+}
+
+html.dark .star__icon.is__filled {
+  fill: #34d399;
+  stroke: #34d399;
+}
+
+html.dark .star__picker label {
+  color: #3f4654;
+}
+
+html.dark .star__picker label:hover,
+html.dark .star__picker label:hover ~ label,
+html.dark .star__picker input:checked ~ label,
+html.dark .star__picker input:focus-visible ~ label {
+  color: #34d399;
+}
+
+html.dark .review__card:hover {
+  border-color: rgba(52, 211, 153, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+html.dark .bg-red-50 {
+  background-color: rgba(127, 29, 29, 0.35) !important;
+}
+
+html.dark .text-red-800,
+html.dark .text-red-700 {
+  color: #fecaca !important;
+}
+
+html.dark .border-red-200 {
+  border-color: rgba(248, 113, 113, 0.35) !important;
+}
+
+/* Product / shop cards */
+html.dark .product__card,
+html.dark a.product__card {
+  background-color: #161a22 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark .product__card:hover,
+html.dark a.product__card:hover {
+  border-color: rgba(16, 185, 129, 0.45) !important;
+}
+
+html.dark .bg-stone-200,
+html.dark .bg-stone-100 {
+  background-color: #1c2230 !important;
+}
+
+html.dark .line-through {
+  color: rgba(231, 229, 228, 0.4) !important;
+}
+
+/* Prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html.theme-ready body,
+  html.theme-ready header,
+  html.theme-ready footer,
+  html.theme-ready nav,
+  html.theme-ready main,
+  html.theme-ready aside,
+  html.theme-ready .field,
+  html.theme-ready .btn__primary,
+  html.theme-ready .btn__dark,
+  html.theme-ready .btn__ghost,
+  html.theme-ready [data-toast],
+  html.theme-ready #mobile-menu,
+  html.theme-ready #theme-toggle {
+    transition: none !important;
+  }
+}

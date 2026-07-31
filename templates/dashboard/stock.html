@@ -1,0 +1,45 @@
+{% extends "dashboard/components/base.html" %}
+{% block content %}
+  <p class="mb-5 text-sm text-slate-500">Low stock threshold: {{ low_stock_threshold }}. Rows in red need restock.</p>
+  {% include "dashboard/components/table_filters.html" %}
+  <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-3 font-semibold">Product</th>
+            <th class="px-4 py-3 font-semibold">Variant</th>
+            <th class="px-4 py-3 font-semibold">SKU</th>
+            <th class="px-4 py-3 font-semibold">Stock</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for variant in variants %}
+            <tr class="{% if variant.stock <= low_stock_threshold %}bg-rose-50/70{% endif %}">
+              <td class="px-4 py-3 font-medium">{{ variant.product.name }}</td>
+              <td class="px-4 py-3">{{ variant.color }} / {{ variant.size }}</td>
+              <td class="px-4 py-3 text-slate-500">{{ variant.sku }}</td>
+              <td class="px-4 py-3">
+                <form method="post" class="flex items-center gap-2">
+                  {% csrf_token %}
+                  <input type="hidden" name="variant_id" value="{{ variant.id }}">
+                  <input type="number"
+                         name="stock"
+                         value="{{ variant.stock }}"
+                         min="0"
+                         class="w-24 rounded-lg border border-slate-200 px-2 py-1.5">
+                  <button class="btn btn__secondary btn__sm">Save</button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="px-4 py-10 text-center text-slate-500">No variants.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% include "dashboard/components/pagination.html" %}
+{% endblock %}

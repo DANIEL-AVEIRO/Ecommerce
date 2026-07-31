@@ -1,7 +1,7 @@
 <footer class="mt-auto border-t border-stone-900/10 bg-stone-900 pb-20 text-stone-50 lg:pb-0">
   <div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
     <div>
-      <p class="font-display text-2xl font-bold tracking-tight">DANIEL</p>
+      <p class="font-display text-2xl font-bold tracking-tight text-emerald-400">DANIEL</p>
       <p class="mt-3 max-w-xs text-sm leading-relaxed text-stone-50/70">
         Everyday essentials designed with quiet craft. Ships nationwide from Yangon.
       </p>
@@ -14,8 +14,10 @@
       <p class="text-xs font-semibold uppercase tracking-widest text-stone-50/50">Shop</p>
       <ul class="mt-4 space-y-2 text-sm text-stone-50/80">
         <li><a href="{% url 'shop' %}" class="transition hover:text-white">All products</a></li>
-        <li><a href="{% url 'shop' %}?category=new" class="transition hover:text-white">New arrivals</a></li>
-        <li><a href="{% url 'shop' %}?category=sale" class="transition hover:text-white">Sale</a></li>
+        <li><a href="{% url 'shop' %}?category=new"
+   class="transition hover:text-white">New arrivals</a></li>
+        <li><a href="{% url 'shop' %}?category=sale"
+   class="transition hover:text-white">Sale</a></li>
         <li><a href="{% url 'wishlist' %}" class="transition hover:text-white">Wishlist</a></li>
       </ul>
     </div>
@@ -31,18 +33,19 @@
     <div>
       <p class="text-xs font-semibold uppercase tracking-widest text-stone-50/50">Stay updated</p>
       <p class="mt-4 text-sm text-stone-50/70">New drops and restocks in your inbox.</p>
-      <form action="{% url 'newsletter_subscribe' %}" method="post" class="mt-4 flex flex-col gap-2 min-[380px]:flex-row">
+      <form action="{% url 'newsletter_subscribe' %}"
+            method="post"
+            class="mt-4 flex flex-col gap-2 min-[380px]:flex-row">
         {% csrf_token %}
         <label class="sr-only" for="footer-email">Email</label>
-        <input
-          id="footer-email"
-          type="email"
-          name="email"
-          required
-          placeholder="Enter your email"
-          class="w-full min-w-0 rounded-md border border-stone-50/20 bg-transparent px-3 py-2 text-sm text-stone-50 outline-none placeholder:text-stone-50/40 focus:border-emerald-600"
-        >
-        <button type="submit" class="shrink-0 rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600">
+        <input id="footer-email"
+               type="email"
+               name="email"
+               required
+               placeholder="Enter your email"
+               class="w-full min-w-0 rounded-md border border-stone-50/20 bg-transparent px-3 py-2 text-sm text-stone-50 outline-none placeholder:text-stone-50/40 focus:border-emerald-500">
+        <button type="submit"
+                class="shrink-0 rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600">
           Join
         </button>
       </form>
@@ -52,7 +55,7 @@
     <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-xs text-stone-50/50 sm:flex-row sm:items-center sm:justify-between">
       <div class="space-y-1">
         <p>&copy; {% now "Y" %} DANIEL. All rights reserved.</p>
-        <p>Designed and Developed by <a href="https://codedbydaniel.vercel.app" target="_blank" rel="noopener noreferrer" class="font-semibold text-red-500 transition hover:text-red-400">Daniel Aveiro</a></p>
+        <p>Designed and Developed by <a href="https://codedbydaniel.vercel.app" target="_blank" rel="noopener noreferrer" class="font-semibold text-emerald-400 transition hover:text-emerald-300">Daniel Aveiro</a></p>
       </div>
       <div class="flex gap-4">
         <a href="{% url 'privacy' %}" class="hover:text-stone-50">Privacy</a>

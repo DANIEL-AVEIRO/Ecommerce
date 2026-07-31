@@ -2,8 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-from models.cart_models import CartItemModel, CartModel
-from models.product_models import ProductModel, ProductVariantModel
+from core.models import CartItemModel, CartModel, ProductModel, ProductVariantModel
 
 
 @login_required(login_url="login")
@@ -23,17 +22,14 @@ def cart(request):
     if free_shipping_remaining < 0:
         free_shipping_remaining = 0
 
-    return render(
-        request,
-        "website/cart.html",
-        {
-            "cart": cart_obj,
-            "items": items,
-            "subtotal": subtotal,
-            "free_shipping_over": free_shipping_over,
-            "free_shipping_remaining": free_shipping_remaining,
-        },
-    )
+    context = {
+        "cart": cart_obj,
+        "items": items,
+        "subtotal": subtotal,
+        "free_shipping_over": free_shipping_over,
+        "free_shipping_remaining": free_shipping_remaining,
+    }
+    return render(request, "website/cart.html", context)
 
 
 @login_required(login_url="login")
@@ -47,16 +43,16 @@ def cart_add(request):
         color = request.POST.get("color", "")
         size = request.POST.get("size", "")
         variant_id = request.POST.get("variant_id")
-        next_url = request.POST.get("next") or "cart"
+        next_url = request.POST.get("next", "cart")
 
         product = ProductModel.objects.filter(id=product_id, is_active=True).first()
         if not product:
             messages.error(request, "Product not found.")
             return redirect("shop")
 
-        try:
+        if quantity.isdigit():
             quantity = int(quantity)
-        except ValueError:
+        else:
             quantity = 1
         if quantity < 1:
             quantity = 1
@@ -78,20 +74,44 @@ def cart_add(request):
                 variant_qs = variant_qs.filter(size=size)
             variant = variant_qs.first()
 
+        if not variant:
+            if product.variants.filter(is_active=True).count() > 0:
+                messages.error(request, "Please choose a color and size.")
+                return redirect("product_detail", slug=product.slug)
+
         if variant:
+            if variant.stock < 1:
+                messages.error(request, "This option is out of stock.")
+                return redirect("product_detail", slug=product.slug)
             unit_price = variant.price
         else:
-            unit_price = product.price
+            if not product.in_stock:
+                messages.error(request, "This product is out of stock.")
+                return redirect("product_detail", slug=product.slug)
+            unit_price = product.selling_price
 
         item = CartItemModel.objects.filter(
             cart=cart_obj, product=product, variant=variant
         ).first()
 
         if item:
-            item.quantity = item.quantity + quantity
+            new_qty = item.quantity + quantity
+            if variant and new_qty > variant.stock:
+                messages.error(
+                    request,
+                    f"Only {variant.stock} left in stock.",
+                )
+                return redirect("product_detail", slug=product.slug)
+            item.quantity = new_qty
             item.unit_price = unit_price
             item.save()
         else:
+            if variant and quantity > variant.stock:
+                messages.error(
+                    request,
+                    f"Only {variant.stock} left in stock.",
+                )
+                return redirect("product_detail", slug=product.slug)
             CartItemModel.objects.create(
                 cart=cart_obj,
                 product=product,
@@ -124,14 +144,20 @@ def cart_update(request):
             messages.error(request, "Item not found.")
             return redirect("cart")
 
-        try:
+        if quantity.isdigit():
             quantity = int(quantity)
-        except ValueError:
+        else:
             quantity = 1
 
         if quantity < 1:
             item.delete()
         else:
+            if item.variant and quantity > item.variant.stock:
+                messages.error(
+                    request,
+                    f"Only {item.variant.stock} left in stock.",
+                )
+                return redirect("cart")
             item.quantity = quantity
             item.save()
 

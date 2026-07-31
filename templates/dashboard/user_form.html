@@ -1,0 +1,110 @@
+{% extends "dashboard/components/base.html" %}
+{% block content %}
+  <div class="mb-5">
+    <a href="{% url 'dashboard_users' %}"
+       class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-teal-700">
+      <i data-lucide="arrow-left" class="h-4 w-4"></i>
+      Back to users
+    </a>
+  </div>
+  <div class="w-full">
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+        <h2 class="font-display text-lg font-bold">
+          {% if account %}Edit user{% else %}Add user{% endif %}
+        </h2>
+        <p class="mt-1 text-sm text-slate-500">
+          {% if account %}
+            Update account details, role, or password.
+          {% else %}
+            Create a customer or staff account for the store.
+          {% endif %}
+        </p>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Username</label>
+            <input name="username"
+                   required
+                   value="{% if account %}{{ account.username }}{% else %}{{ form_username|default:'' }}{% endif %}"
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                   placeholder="daniel">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Email</label>
+            <input name="email"
+                   type="email"
+                   required
+                   value="{% if account %}{{ account.email }}{% else %}{{ form_email|default:'' }}{% endif %}"
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                   placeholder="daniel@example.com">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Phone</label>
+            <input name="phone"
+                   value="{{ phone|default:'' }}"
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                   placeholder="09xxxxxxxxx">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">
+              {% if account %}New password{% else %}Password{% endif %}
+            </label>
+            <input name="password"
+                   type="password"
+                   {% if not account %}required{% endif %}
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                   placeholder="{% if account %}Leave blank to keep current{% else %}At least 8 characters{% endif %}">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Confirm password</label>
+            <input name="password_confirm"
+                   type="password"
+                   {% if not account %}required{% endif %}
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                   placeholder="Repeat password">
+          </div>
+          <div class="sm:col-span-2 flex flex-wrap gap-5 pt-1">
+            <label class="inline-flex items-center gap-2 text-sm">
+              <input type="checkbox"
+                     name="is_staff"
+                     class="rounded border-slate-300"
+                     {% if account and account.is_staff %}checked{% elif not account and form_is_staff %}checked{% endif %}>
+              Staff (dashboard access)
+            </label>
+            <label class="inline-flex items-center gap-2 text-sm">
+              <input type="checkbox"
+                     name="is_active"
+                     class="rounded border-slate-300"
+                     {% if account %}
+                       {% if account.is_active %}checked{% endif %}
+                     {% else %}
+                       {% if form_is_active != False %}checked{% endif %}
+                     {% endif %}>
+              Active
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <button type="submit"
+                name="action"
+                value="save"
+                class="btn btn__primary">
+          {% if account %}Save changes{% else %}Create user{% endif %}
+        </button>
+        <a href="{% url 'dashboard_users' %}" class="btn btn__ghost">Cancel</a>
+        {% if account %}
+          <button type="submit"
+                  name="action"
+                  value="delete"
+                  class="btn btn__danger ml-auto"
+                  {% if account.id == user.id %}disabled{% endif %}
+                  onclick="return confirm('Delete this user?');">
+            Delete
+          </button>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+{% endblock %}

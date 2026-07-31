@@ -1,0 +1,85 @@
+<aside id="dashboard__sidebar"
+       class="dashboard__sidebar fixed inset-y-0 left-0 z-40 flex w-72 -translate-x-full flex-col border-r transition-transform duration-300 lg:static lg:translate-x-0">
+  <div class="sidebar__header flex h-16 items-center gap-3 border-b px-5">
+    <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-600 font-display text-sm font-extrabold text-white">D</div>
+    <div class="min-w-0">
+      <p class="font-display text-lg font-extrabold tracking-tight">DANIEL</p>
+      <p class="sidebar__kicker text-[11px] uppercase tracking-[0.16em]">Admin</p>
+    </div>
+  </div>
+  <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4 text-sm">
+    <p class="sidebar__label px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.14em]">Main</p>
+    <a href="{% url 'dashboard' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'overview' %}is__active{% endif %}">
+      <i data-lucide="layout-dashboard" class="h-4 w-4 shrink-0"></i>
+      Overview
+    </a>
+    <a href="{% url 'dashboard_users' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'users' %}is__active{% endif %}">
+      <i data-lucide="users" class="h-4 w-4 shrink-0"></i>
+      Users
+    </a>
+    <a href="{% url 'dashboard_orders' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'orders' %}is__active{% endif %}">
+      <i data-lucide="shopping-bag" class="h-4 w-4 shrink-0"></i>
+      Orders
+    </a>
+    <a href="{% url 'dashboard_stock' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'stock' %}is__active{% endif %}">
+      <i data-lucide="package" class="h-4 w-4 shrink-0"></i>
+      Stock
+    </a>
+    <a href="{% url 'dashboard_products' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'products' %}is__active{% endif %}">
+      <i data-lucide="shirt" class="h-4 w-4 shrink-0"></i>
+      Products
+    </a>
+    <a href="{% url 'dashboard_categories' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'categories' %}is__active{% endif %}">
+      <i data-lucide="folders" class="h-4 w-4 shrink-0"></i>
+      Categories
+    </a>
+    <p class="sidebar__label px-3 pb-2 pt-5 text-[11px] font-semibold uppercase tracking-[0.14em]">Store</p>
+    <a href="{% url 'dashboard_coupons' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'coupons' %}is__active{% endif %}">
+      <i data-lucide="ticket-percent" class="h-4 w-4 shrink-0"></i>
+      Coupons
+    </a>
+    <a href="{% url 'dashboard_regions' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'regions' %}is__active{% endif %}">
+      <i data-lucide="map-pin" class="h-4 w-4 shrink-0"></i>
+      Shipping
+    </a>
+    <a href="{% url 'dashboard_returns' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'returns' %}is__active{% endif %}">
+      <i data-lucide="undo-2" class="h-4 w-4 shrink-0"></i>
+      Returns
+    </a>
+    <a href="{% url 'dashboard_payment_methods' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'payments' %}is__active{% endif %}">
+      <i data-lucide="wallet" class="h-4 w-4 shrink-0"></i>
+      Payments
+    </a>
+    <a href="{% url 'dashboard_reviews' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'reviews' %}is__active{% endif %}">
+      <i data-lucide="star" class="h-4 w-4 shrink-0"></i>
+      Reviews
+    </a>
+    <a href="{% url 'dashboard_contacts' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'contacts' %}is__active{% endif %}">
+      <i data-lucide="mail" class="h-4 w-4 shrink-0"></i>
+      Contacts
+    </a>
+    <a href="{% url 'dashboard_newsletter' %}"
+       class="sidebar__link flex items-center gap-3 rounded-lg px-3 py-2.5 transition {% if active_nav == 'newsletter' %}is__active{% endif %}">
+      <i data-lucide="newspaper" class="h-4 w-4 shrink-0"></i>
+      Newsletter
+    </a>
+  </nav>
+  <div class="sidebar__footer border-t p-4">
+    <div class="sidebar__user rounded-lg px-3 py-3">
+      <p class="truncate text-sm font-semibold">{{ user.username }}</p>
+      <p class="sidebar__user__email mt-0.5 truncate text-xs">{{ user.email }}</p>
+    </div>
+  </div>
+</aside>

@@ -1,85 +1,83 @@
 {% extends "website/components/base.html" %}
-
 {% block title %}Create account — DANIEL{% endblock %}
-
 {% block content %}
-<style>
-  @keyframes auth-pan {
-    from { transform: scale(1.05) translate(0, 0); }
-    to { transform: scale(1.12) translate(-1.5%, -1%); }
-  }
-  @keyframes auth-line {
-    from { transform: scaleX(0); opacity: 0; }
-    to { transform: scaleX(1); opacity: 1; }
-  }
-  @keyframes auth-rise {
-    from { opacity: 0; transform: translateY(14px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .auth-rise {
-    animation: auth-rise 0.7s ease-out both;
-  }
-</style>
 
-<div class="grid min-h-[calc(100vh-4rem)] lg:grid-cols-2">
-  {% include "website/components/auth_visual.html" with tagline="Join DANIEL to save favorites, track orders, and checkout faster." image_path="website/auth/register.jpg" %}
-
-  <div class="relative flex items-center justify-center bg-gradient-to-br from-stone-50 via-stone-50 to-emerald-50/40 px-4 py-16 sm:px-8">
-    <div class="pointer-events-none absolute inset-0 opacity-[0.035]" style="background-image: radial-gradient(circle at 1px 1px, #1c1917 1px, transparent 0); background-size: 22px 22px;" aria-hidden="true"></div>
-
-    <div class="auth-rise relative w-full max-w-md">
-      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800/70">Get started</p>
-      <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">Create account</h1>
-      <p class="mt-3 text-sm leading-relaxed text-stone-900/55">One account for shopping, wishlist, and deliveries.</p>
-
-      <form action="{% url 'register' %}" method="post" class="mt-10 space-y-4">
-        {% csrf_token %}
-        <div class="grid gap-4 sm:grid-cols-2">
+  <div class="grid min-h-[calc(100vh-4rem)] lg:grid-cols-2">
+    {% include "website/components/auth_visual.html" with tagline="Join DANIEL to save favorites, track orders, and checkout faster." image_path="website/images/auth/register.jpg" %}
+    <div class="relative flex items-center justify-center bg-gradient-to-br from-stone-50 via-stone-50 to-emerald-50/40 px-4 py-16 sm:px-8">
+      <div class="pointer-events-none absolute inset-0 opacity-[0.035]"
+           style="background-image: radial-gradient(circle at 1px 1px, #1c1917 1px, transparent 0);
+                  background-size: 22px 22px"
+           aria-hidden="true"></div>
+      <div class="auth__rise relative w-full max-w-md">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800/70">Get started</p>
+        <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">Create account</h1>
+        <p class="mt-3 text-sm leading-relaxed text-stone-900/55">One account for shopping, wishlist, and deliveries.</p>
+        <form action="{% url 'register' %}" method="post" class="mt-10 space-y-4">
+          {% csrf_token %}
           <div>
-            <label for="first_name" class="text-sm font-medium text-stone-900/80">First name</label>
-            <input id="first_name" name="first_name" required placeholder="Enter your first name"
-              class="mt-2 w-full rounded-md border border-stone-900/10 bg-white/80 px-3.5 py-3 text-sm outline-none transition placeholder:text-stone-900/30 focus:border-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-700/15">
+            <label for="username" class="text-sm font-medium text-stone-900/80">Username</label>
+            <input id="username"
+                   name="username"
+                   required
+                   autocomplete="username"
+                   placeholder="Enter your username"
+                   class="mt-2 w-full rounded-md border border-stone-900/10 bg-white/80 px-3.5 py-3 text-sm outline-none transition placeholder:text-stone-900/30 focus:border-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-700/15">
           </div>
           <div>
-            <label for="last_name" class="text-sm font-medium text-stone-900/80">Last name</label>
-            <input id="last_name" name="last_name" required placeholder="Enter your last name"
-              class="mt-2 w-full rounded-md border border-stone-900/10 bg-white/80 px-3.5 py-3 text-sm outline-none transition placeholder:text-stone-900/30 focus:border-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-700/15">
+            <label for="email" class="text-sm font-medium text-stone-900/80">Email</label>
+            <input id="email"
+                   name="email"
+                   type="email"
+                   required
+                   autocomplete="email"
+                   placeholder="Enter your email"
+                   class="mt-2 w-full rounded-md border border-stone-900/10 bg-white/80 px-3.5 py-3 text-sm outline-none transition placeholder:text-stone-900/30 focus:border-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-700/15">
           </div>
-        </div>
-        <div>
-          <label for="email" class="text-sm font-medium text-stone-900/80">Email</label>
-          <input id="email" name="email" type="email" required autocomplete="email" placeholder="Enter your email"
-            class="mt-2 w-full rounded-md border border-stone-900/10 bg-white/80 px-3.5 py-3 text-sm outline-none transition placeholder:text-stone-900/30 focus:border-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-700/15">
-        </div>
-        <div>
-          <label for="phone" class="text-sm font-medium text-stone-900/80">Phone <span class="font-normal text-stone-900/40">(optional)</span></label>
-          <input id="phone" name="phone" type="tel" placeholder="Enter your phone number"
-            class="mt-2 w-full rounded-md border border-stone-900/10 bg-white/80 px-3.5 py-3 text-sm outline-none transition placeholder:text-stone-900/30 focus:border-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-700/15">
-        </div>
-        <div>
-          <label for="password" class="text-sm font-medium text-stone-900/80">Password</label>
-          <input id="password" name="password" type="password" required autocomplete="new-password" placeholder="Enter your password"
-            class="mt-2 w-full rounded-md border border-stone-900/10 bg-white/80 px-3.5 py-3 text-sm outline-none transition placeholder:text-stone-900/30 focus:border-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-700/15">
-        </div>
-        <div>
-          <label for="password_confirm" class="text-sm font-medium text-stone-900/80">Confirm password</label>
-          <input id="password_confirm" name="password_confirm" type="password" required autocomplete="new-password" placeholder="Enter your password again"
-            class="mt-2 w-full rounded-md border border-stone-900/10 bg-white/80 px-3.5 py-3 text-sm outline-none transition placeholder:text-stone-900/30 focus:border-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-700/15">
-        </div>
-        <label class="flex items-start gap-2.5 pt-1 text-sm text-stone-900/65">
-          <input type="checkbox" name="terms" required class="mt-0.5 size-4 rounded border-stone-900/20 accent-emerald-700">
-          <span>I agree to the <a href="{% url 'terms' %}" class="text-emerald-700 underline decoration-emerald-700/30 underline-offset-2 hover:decoration-emerald-700">Terms</a> and <a href="{% url 'privacy' %}" class="text-emerald-700 underline decoration-emerald-700/30 underline-offset-2 hover:decoration-emerald-700">Privacy Policy</a>.</span>
-        </label>
-        <button type="submit" class="btn-dark w-full !py-3.5">
-          Create account
-        </button>
-      </form>
-
-      <p class="mt-8 text-sm text-stone-900/55">
-        Already have an account?
-        <a href="{% url 'login' %}" class="link-accent">Sign in</a>
-      </p>
+          <div>
+            <label for="phone" class="text-sm font-medium text-stone-900/80">Phone <span class="font-normal text-stone-900/40">(optional)</span></label>
+            <input id="phone"
+                   name="phone"
+                   type="tel"
+                   placeholder="Enter your phone number"
+                   class="mt-2 w-full rounded-md border border-stone-900/10 bg-white/80 px-3.5 py-3 text-sm outline-none transition placeholder:text-stone-900/30 focus:border-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-700/15">
+          </div>
+          <div>
+            <label for="password" class="text-sm font-medium text-stone-900/80">Password</label>
+            <input id="password"
+                   name="password"
+                   type="password"
+                   required
+                   autocomplete="new-password"
+                   placeholder="Enter your password"
+                   class="mt-2 w-full rounded-md border border-stone-900/10 bg-white/80 px-3.5 py-3 text-sm outline-none transition placeholder:text-stone-900/30 focus:border-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-700/15">
+          </div>
+          <div>
+            <label for="password_confirm" class="text-sm font-medium text-stone-900/80">Confirm password</label>
+            <input id="password_confirm"
+                   name="password_confirm"
+                   type="password"
+                   required
+                   autocomplete="new-password"
+                   placeholder="Enter your password again"
+                   class="mt-2 w-full rounded-md border border-stone-900/10 bg-white/80 px-3.5 py-3 text-sm outline-none transition placeholder:text-stone-900/30 focus:border-emerald-700 focus:bg-white focus:ring-2 focus:ring-emerald-700/15">
+          </div>
+          <label class="flex items-start gap-2.5 pt-1 text-sm text-stone-900/65">
+            <input type="checkbox"
+                   name="terms"
+                   required
+                   class="mt-0.5 size-4 rounded border-stone-900/20 accent-emerald-700">
+            <span>I agree to the <a href="{% url 'terms' %}"
+    class="text-emerald-700 underline decoration-emerald-700/30 underline-offset-2 hover:decoration-emerald-700">Terms</a> and <a href="{% url 'privacy' %}"
+    class="text-emerald-700 underline decoration-emerald-700/30 underline-offset-2 hover:decoration-emerald-700">Privacy Policy</a>.</span>
+          </label>
+          <button type="submit" class="btn__dark w-full !py-3.5">Create account</button>
+        </form>
+        <p class="mt-8 text-sm text-stone-900/55">
+          Already have an account?
+          <a href="{% url 'login' %}" class="link__accent">Sign in</a>
+        </p>
+      </div>
     </div>
   </div>
-</div>
 {% endblock %}

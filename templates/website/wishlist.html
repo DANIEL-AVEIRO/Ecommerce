@@ -1,5 +1,5 @@
 {% extends "website/components/base.html" %}
-{% load store_tags %}
+{% load humanize %}
 
 {% block title %}Wishlist — DANIEL{% endblock %}
 
@@ -16,27 +16,34 @@
   <p class="mb-6 text-sm text-stone-900/55">Saved for later — move pieces to cart when you’re ready. Prices shown in Kyat.</p>
   <div class="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
     {% for item in items %}
-    <article class="group">
-      <a href="{% url 'product_detail' item.product.slug %}" class="block aspect-[4/5] overflow-hidden rounded-lg bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700">
-        <img src="{{ item.product.primary_image_url }}" alt="" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy">
+    <article class="product__card group flex h-full flex-col overflow-hidden rounded-xl border border-stone-900/10 bg-white p-3 sm:p-4">
+      <a href="{% url 'product_detail' item.product.slug %}"
+         class="block aspect-[4/5] overflow-hidden rounded-lg bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700">
+        <img src="{{ item.product.primary_image_url }}"
+             alt=""
+             class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+             loading="lazy">
       </a>
-      <div class="mt-4 flex items-start justify-between gap-3">
-        <div class="min-w-0">
-          <p class="text-xs font-medium uppercase tracking-wider text-emerald-700/80">{{ item.product.category.name }}</p>
-          <a href="{% url 'product_detail' item.product.slug %}" class="mt-1 block break-words font-display text-base font-semibold transition hover:text-emerald-700">{{ item.product.name }}</a>
-          <p class="mt-1 text-sm font-semibold text-stone-900">{{ item.product.price|money }}</p>
+      <div class="mt-3 flex flex-1 flex-col px-0.5 sm:mt-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-700/80 sm:text-xs">{{ item.product.category.name }}</p>
+            <a href="{% url 'product_detail' item.product.slug %}"
+               class="mt-1.5 block break-words font-display text-base font-semibold transition hover:text-emerald-700">{{ item.product.name }}</a>
+            <p class="mt-3 text-sm font-semibold text-stone-900">{{ item.product.selling_price|intcomma }} Ks</p>
+          </div>
+          <form action="{% url 'wishlist_remove' %}" method="post" class="shrink-0">
+            {% csrf_token %}
+            <input type="hidden" name="item_id" value="{{ item.id }}">
+            <button type="submit" class="text-sm text-stone-900/45 transition hover:text-stone-900">Remove</button>
+          </form>
         </div>
-        <form action="{% url 'wishlist_remove' %}" method="post" class="shrink-0">
+        <form action="{% url 'wishlist_add_to_cart' %}" method="post" class="mt-auto pt-3">
           {% csrf_token %}
           <input type="hidden" name="item_id" value="{{ item.id }}">
-          <button type="submit" class="text-sm text-stone-900/45 transition hover:text-stone-900">Remove</button>
+          <button type="submit" class="btn__ghost w-full !py-2.5">Add to cart</button>
         </form>
       </div>
-      <form action="{% url 'wishlist_add_to_cart' %}" method="post" class="mt-3">
-        {% csrf_token %}
-        <input type="hidden" name="item_id" value="{{ item.id }}">
-        <button type="submit" class="btn-ghost w-full !py-2.5">Add to cart</button>
-      </form>
     </article>
     {% endfor %}
   </div>
@@ -49,7 +56,7 @@
     </div>
     <h2 class="mt-6 font-display text-2xl font-bold">Nothing saved yet</h2>
     <p class="mt-2 text-sm text-stone-900/60">Save pieces you love and find them here later.</p>
-    <a href="{% url 'shop' %}" class="btn-primary mt-6">Browse shop</a>
+    <a href="{% url 'shop' %}" class="btn__primary mt-6">Browse shop</a>
   </div>
   {% endif %}
 </div>

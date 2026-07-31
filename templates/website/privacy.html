@@ -1,57 +1,54 @@
 {% extends "website/components/base.html" %}
-
 {% block title %}Privacy Policy — DANIEL{% endblock %}
-
 {% block content %}
-<div class="border-b border-stone-900/5 bg-gradient-to-b from-stone-50 to-stone-100">
-  <div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
-    <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Privacy Policy</h1>
-    <p class="mt-2 text-sm text-stone-900/60">Last updated July 2026 · DANIEL Store, Yangon</p>
+  <div class="border-b border-stone-900/5 bg-gradient-to-b from-stone-50 to-stone-100">
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
+      <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Privacy Policy</h1>
+      <p class="mt-2 text-sm text-stone-900/60">Last updated July 2026 · DANIEL Store, Yangon</p>
+    </div>
   </div>
-</div>
-
-<div class="mx-auto max-w-3xl space-y-10 px-4 py-10 text-sm leading-relaxed text-stone-900/70 sm:py-12">
-  <nav class="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold uppercase tracking-wide text-emerald-800/70">
-    <a href="#collect" class="hover:text-emerald-700">What we collect</a>
-    <a href="#use" class="hover:text-emerald-700">How we use it</a>
-    <a href="#sharing" class="hover:text-emerald-700">Sharing</a>
-    <a href="#cookies" class="hover:text-emerald-700">Cookies</a>
-    <a href="#choices" class="hover:text-emerald-700">Your choices</a>
-  </nav>
-
-  <section id="collect">
-    <h2 class="font-display text-xl font-bold text-stone-900">What we collect</h2>
-    <p class="mt-3">
-      Name, email, phone, shipping address, and order history needed to fulfill purchases and support your account. If you join the newsletter, we store your email for updates.
+  <div class="mx-auto max-w-3xl space-y-10 px-4 py-10 text-sm leading-relaxed text-stone-900/70 sm:py-12">
+    <nav class="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold uppercase tracking-wide text-emerald-800/70">
+      <a href="#collect" class="hover:text-emerald-700">What we collect</a>
+      <a href="#use" class="hover:text-emerald-700">How we use it</a>
+      <a href="#sharing" class="hover:text-emerald-700">Sharing</a>
+      <a href="#cookies" class="hover:text-emerald-700">Cookies</a>
+      <a href="#choices" class="hover:text-emerald-700">Your choices</a>
+    </nav>
+    <section id="collect">
+      <h2 class="font-display text-xl font-bold text-stone-900">What we collect</h2>
+      <p class="mt-3">
+        Name, email, phone, shipping address, and order history needed to fulfill purchases and support your account. If you join the newsletter, we store your email for updates.
+      </p>
+    </section>
+    <section id="use">
+      <h2 class="font-display text-xl font-bold text-stone-900">How we use it</h2>
+      <p class="mt-3">
+        To process orders, send delivery updates, answer support requests, improve the store, and (with consent) share product news or restocks.
+      </p>
+    </section>
+    <section id="sharing">
+      <h2 class="font-display text-xl font-bold text-stone-900">Sharing</h2>
+      <p class="mt-3">
+        We share data only with payment and courier partners required to complete your order. We do not sell personal data to advertisers.
+      </p>
+    </section>
+    <section id="cookies">
+      <h2 class="font-display text-xl font-bold text-stone-900">Cookies & sessions</h2>
+      <p class="mt-3">
+        We use essential cookies/sessions to keep you signed in and remember cart-related state. These are required for the store to work.
+      </p>
+    </section>
+    <section id="choices">
+      <h2 class="font-display text-xl font-bold text-stone-900">Your choices</h2>
+      <p class="mt-3">
+        You can update account details anytime, unsubscribe from marketing emails, or request account deletion by contacting
+        <a href="mailto:hello@daniel.store" class="text-emerald-700 underline">hello@daniel.store</a>.
+      </p>
+    </section>
+    <p class="border-t border-stone-900/10 pt-6">
+      Questions? <a href="{% url 'contact' %}"
+    class="font-semibold text-emerald-700 hover:text-emerald-600">Contact us</a>
     </p>
-  </section>
-  <section id="use">
-    <h2 class="font-display text-xl font-bold text-stone-900">How we use it</h2>
-    <p class="mt-3">
-      To process orders, send delivery updates, answer support requests, improve the store, and (with consent) share product news or restocks.
-    </p>
-  </section>
-  <section id="sharing">
-    <h2 class="font-display text-xl font-bold text-stone-900">Sharing</h2>
-    <p class="mt-3">
-      We share data only with payment and courier partners required to complete your order. We do not sell personal data to advertisers.
-    </p>
-  </section>
-  <section id="cookies">
-    <h2 class="font-display text-xl font-bold text-stone-900">Cookies & sessions</h2>
-    <p class="mt-3">
-      We use essential cookies/sessions to keep you signed in and remember cart-related state. These are required for the store to work.
-    </p>
-  </section>
-  <section id="choices">
-    <h2 class="font-display text-xl font-bold text-stone-900">Your choices</h2>
-    <p class="mt-3">
-      You can update account details anytime, unsubscribe from marketing emails, or request account deletion by contacting
-      <a href="mailto:hello@daniel.store" class="text-emerald-700 underline">hello@daniel.store</a>.
-    </p>
-  </section>
-  <p class="border-t border-stone-900/10 pt-6">
-    Questions? <a href="{% url 'contact' %}" class="font-semibold text-emerald-700 hover:text-emerald-600">Contact us</a>
-  </p>
-</div>
+  </div>
 {% endblock %}

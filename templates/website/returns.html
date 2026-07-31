@@ -1,55 +1,58 @@
 {% extends "website/components/base.html" %}
-
 {% block title %}Returns — DANIEL{% endblock %}
-
 {% block content %}
-<div class="border-b border-stone-900/5 bg-gradient-to-b from-stone-50 to-stone-100">
+  <div class="border-b border-stone-900/5 bg-gradient-to-b from-stone-50 to-stone-100">
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
+      <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Returns</h1>
+      <p class="mt-2 text-sm text-stone-900/60 sm:text-base">Simple returns within 7 days of delivery.</p>
+    </div>
+  </div>
   <div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
-    <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Returns</h1>
-    <p class="mt-2 text-sm text-stone-900/60 sm:text-base">Simple returns within 7 days of delivery.</p>
+    <div class="grid gap-4 sm:grid-cols-3">
+      <div class="rounded-lg border border-stone-900/10 bg-white p-5">
+        <p class="font-display text-lg font-bold">1. Request</p>
+        <p class="mt-2 text-sm text-stone-900/60">Submit a return for a delivered order below.</p>
+      </div>
+      <div class="rounded-lg border border-stone-900/10 bg-white p-5">
+        <p class="font-display text-lg font-bold">2. Send it back</p>
+        <p class="mt-2 text-sm text-stone-900/60">We’ll confirm eligibility and share return steps.</p>
+      </div>
+      <div class="rounded-lg border border-stone-900/10 bg-white p-5">
+        <p class="font-display text-lg font-bold">3. Refund</p>
+        <p class="mt-2 text-sm text-stone-900/60">After inspection, refunds take 3–5 business days.</p>
+      </div>
+    </div>
+    <div class="mx-auto mt-12 max-w-2xl rounded-lg border border-stone-900/10 bg-white p-6">
+      <h2 class="font-display text-2xl font-bold">Start a return</h2>
+      {% if user.is_authenticated %}
+        <form action="{% url 'returns' %}" method="post" class="mt-6 space-y-4">
+          {% csrf_token %}
+          <div>
+            <label for="order_number" class="label">Delivered order</label>
+            <select id="order_number" name="order_number" required class="field">
+              <option value="">Select order</option>
+              {% for order in delivered_orders %}
+                <option value="{{ order.order_number }}">{{ order.order_number }} — {{ order.created_at|date:"M j, Y" }}</option>
+              {% empty %}
+                <option value="" disabled>No delivered orders yet</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label for="reason" class="label">Reason</label>
+            <textarea id="reason"
+                      name="reason"
+                      rows="4"
+                      required
+                      class="field"
+                      placeholder="Tell us why you’re returning"></textarea>
+          </div>
+          <button type="submit" class="btn__primary">Submit return request</button>
+        </form>
+      {% else %}
+        <p class="mt-4 text-sm text-stone-900/60">Please <a href="{% url 'login' %}?next={% url 'returns' %}"
+    class="text-emerald-700 underline">sign in</a> to request a return.</p>
+      {% endif %}
+    </div>
   </div>
-</div>
-
-<div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
-  <div class="grid gap-4 sm:grid-cols-3">
-    <div class="rounded-lg border border-stone-900/10 bg-white p-5">
-      <p class="font-display text-lg font-bold">1. Contact us</p>
-      <p class="mt-2 text-sm text-stone-900/60">Share your order number and reason within 7 days.</p>
-    </div>
-    <div class="rounded-lg border border-stone-900/10 bg-white p-5">
-      <p class="font-display text-lg font-bold">2. Send it back</p>
-      <p class="mt-2 text-sm text-stone-900/60">We’ll confirm eligibility and share return steps.</p>
-    </div>
-    <div class="rounded-lg border border-stone-900/10 bg-white p-5">
-      <p class="font-display text-lg font-bold">3. Refund</p>
-      <p class="mt-2 text-sm text-stone-900/60">After inspection, refunds take 3–5 business days.</p>
-    </div>
-  </div>
-
-  <div class="mx-auto mt-12 max-w-3xl space-y-10">
-    <section>
-      <h2 class="font-display text-2xl font-bold">Eligibility</h2>
-      <p class="mt-3 text-sm leading-relaxed text-stone-900/65">
-        Items must be unused, unwashed, and returned with original tags within 7 days of delivery. Final-sale and intimate items cannot be returned.
-      </p>
-    </section>
-    <section>
-      <h2 class="font-display text-2xl font-bold">Exchanges</h2>
-      <p class="mt-3 text-sm leading-relaxed text-stone-900/65">
-        Need a different size or color? Message us with your order number — we’ll help swap when stock allows, or process a return + new order.
-      </p>
-    </section>
-    <section>
-      <h2 class="font-display text-2xl font-bold">Damaged or wrong item</h2>
-      <p class="mt-3 text-sm leading-relaxed text-stone-900/65">
-        Contact us within 48 hours of delivery with photos. We’ll arrange a free replacement or full refund.
-      </p>
-    </section>
-    <div class="rounded-lg border border-stone-900/10 bg-stone-100/70 px-5 py-6 text-center">
-      <p class="font-display text-xl font-bold">Start a return</p>
-      <p class="mt-2 text-sm text-stone-900/60">Include your order number so we can help faster.</p>
-      <a href="{% url 'contact' %}" class="btn-primary mt-5 inline-flex">Contact support</a>
-    </div>
-  </div>
-</div>
 {% endblock %}

@@ -2,8 +2,13 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 
 from enums.content_enums import ContactSubject
-from models.content_models import ContactMessageModel, NewsletterSubscriberModel
-
+from enums.order_enums import OrderStatus, ReturnStatus
+from core.models import (
+    ContactMessageModel,
+    NewsletterSubscriberModel,
+    OrderModel,
+    ReturnRequestModel,
+)
 
 def about(request):
     return render(request, "website/about.html")
@@ -14,10 +19,10 @@ def contact(request):
         return render(request, "website/contact.html")
 
     if request.method == "POST":
-        name = (request.POST.get("name") or "").strip()
-        email = (request.POST.get("email") or "").strip()
-        subject_text = request.POST.get("subject") or "Other"
-        message = (request.POST.get("message") or "").strip()
+        name = request.POST.get("name", "")
+        email = request.POST.get("email", "")
+        subject_text = request.POST.get("subject", "Other")
+        message = request.POST.get("message", "")
 
         subject_map = {
             "Order support": ContactSubject.ORDER,
@@ -52,7 +57,62 @@ def shipping(request):
 
 
 def returns(request):
-    return render(request, "website/returns.html")
+    delivered_orders = []
+    if request.user.is_authenticated:
+        delivered_orders = OrderModel.objects.filter(
+            user=request.user, status=OrderStatus.DELIVERED
+        )
+
+    if request.method == "GET":
+        context = {
+            "delivered_orders": delivered_orders,
+        }
+        return render(request, "website/returns.html", context)
+
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            messages.error(request, "Please sign in to request a return.")
+            return redirect("login")
+
+        order_number = request.POST.get("order_number", "")
+        reason = request.POST.get("reason", "")
+
+        order = OrderModel.objects.filter(
+            order_number=order_number,
+            user=request.user,
+            status=OrderStatus.DELIVERED,
+        ).first()
+        if not order:
+            messages.error(request, "Order not found or not eligible for return.")
+            context = {
+                "delivered_orders": delivered_orders,
+            }
+            return render(request, "website/returns.html", context)
+
+        if not reason:
+            messages.error(request, "Please enter a reason.")
+            context = {
+                "delivered_orders": delivered_orders,
+            }
+            return render(request, "website/returns.html", context)
+
+        existing = ReturnRequestModel.objects.filter(
+            order=order, status=ReturnStatus.PENDING
+        ).first()
+        if existing:
+            messages.info(request, "You already have a pending return for that order.")
+            return redirect("returns")
+
+        ReturnRequestModel.objects.create(
+            order=order,
+            user=request.user,
+            reason=reason,
+            status=ReturnStatus.PENDING,
+        )
+        messages.success(request, "Return request submitted. We’ll email you soon.")
+        return redirect("returns")
+
+    return redirect("returns")
 
 
 def privacy(request):
@@ -72,7 +132,7 @@ def newsletter_subscribe(request):
         return redirect("index")
 
     if request.method == "POST":
-        email = (request.POST.get("email") or "").strip().lower()
+        email = request.POST.get("email", "").lower()
         if email:
             existing = NewsletterSubscriberModel.objects.filter(email=email).first()
             if not existing:

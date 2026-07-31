@@ -1,9 +1,15 @@
 from enums.content_enums import ContactSubject
-from enums.order_enums import OrderStatus, PaymentMethod, ShippingMethod
+from enums.order_enums import (
+    OrderStatus,
+    PaymentStatus,
+    ReturnStatus,
+    ShippingMethod,
+)
 
 __all__ = [
     "ContactSubject",
     "OrderStatus",
-    "PaymentMethod",
+    "PaymentStatus",
+    "ReturnStatus",
     "ShippingMethod",
 ]

@@ -27,8 +27,7 @@ class AddressModel(BaseModel):
         related_name="addresses",
     )
     label = models.CharField(max_length=64, blank=True)
-    first_name = models.CharField(max_length=80)
-    last_name = models.CharField(max_length=80, blank=True)
+    username = models.CharField(max_length=150)
     address = models.CharField(max_length=255)
     city = models.CharField(max_length=120)
     region = models.CharField(max_length=120)
@@ -40,7 +39,7 @@ class AddressModel(BaseModel):
         verbose_name_plural = "addresses"
 
     def __str__(self):
-        return self.label or f"{self.first_name} — {self.city}"
+        return self.label or f"{self.username} — {self.city}"
 
     def save(self, *args, **kwargs):
         if self.is_default:

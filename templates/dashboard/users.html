@@ -1,0 +1,90 @@
+{% extends "dashboard/components/base.html" %}
+{% block content %}
+  <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+    <p class="text-sm text-slate-500">Create, edit, or remove store accounts.</p>
+    <a href="{% url 'dashboard_user_create' %}" class="btn btn__primary">
+      <i data-lucide="plus" class="h-4 w-4"></i>
+      Add user
+    </a>
+  </div>
+  {% include "dashboard/components/table_filters.html" %}
+  <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-3 font-semibold">User</th>
+            <th class="px-4 py-3 font-semibold">Email</th>
+            <th class="px-4 py-3 font-semibold">Phone</th>
+            <th class="px-4 py-3 font-semibold">Orders</th>
+            <th class="px-4 py-3 font-semibold">Role</th>
+            <th class="px-4 py-3 font-semibold">Status</th>
+            <th class="px-4 py-3 font-semibold">Joined</th>
+            <th class="px-4 py-3 font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for account in users %}
+            <tr class="table__row__hover">
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-50 text-sm font-bold text-teal-700">
+                    {{ account.username|slice:":1"|upper }}
+                  </div>
+                  <a href="{% url 'dashboard_user_edit' account.id %}"
+                     class="font-semibold text-teal-700 hover:underline">{{ account.username }}</a>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-slate-500">{{ account.email|default:"—" }}</td>
+              <td class="px-4 py-3 text-slate-500">{{ account.phone|default:"—" }}</td>
+              <td class="px-4 py-3">{{ account.order_count }}</td>
+              <td class="px-4 py-3">
+                {% if account.is_staff %}
+                  <span class="rounded-md bg-teal-50 px-2 py-1 text-xs font-medium text-teal-800">Staff</span>
+                {% else %}
+                  <span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500">Customer</span>
+                {% endif %}
+              </td>
+              <td class="px-4 py-3">
+                {% if account.is_active %}
+                  <span class="rounded-md bg-teal-50 px-2 py-1 text-xs font-medium text-teal-800">Active</span>
+                {% else %}
+                  <span class="rounded-md bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700">Inactive</span>
+                {% endif %}
+              </td>
+              <td class="whitespace-nowrap px-4 py-3 text-slate-500">{{ account.date_joined|date:"M j, Y" }}</td>
+              <td class="px-4 py-3">
+                <div class="flex flex-nowrap items-center gap-2 whitespace-nowrap">
+                  <a href="{% url 'dashboard_user_edit' account.id %}"
+                     class="btn btn__ghost btn__sm">Edit</a>
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ account.id }}">
+                    <input type="hidden" name="action" value="toggle_active">
+                    <button class="btn btn__ghost btn__sm"
+                            {% if account.id == user.id %}disabled{% endif %}>
+                      {% if account.is_active %}Disable{% else %}Enable{% endif %}
+                    </button>
+                  </form>
+                  <form method="post"
+                        onsubmit="return confirm('Delete this user?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ account.id }}">
+                    <input type="hidden" name="action" value="delete">
+                    <button class="btn btn__danger btn__sm"
+                            {% if account.id == user.id %}disabled{% endif %}>Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="8" class="px-4 py-10 text-center text-slate-500">No users yet. Add your first user.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% include "dashboard/components/pagination.html" %}
+{% endblock %}

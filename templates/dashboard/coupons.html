@@ -1,0 +1,127 @@
+{% extends "dashboard/components/base.html" %}
+{% load humanize %}
+{% block content %}
+  {% include "dashboard/components/table_filters.html" %}
+  <div class="grid gap-6 xl:grid-cols-5">
+    <form method="post"
+          class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm xl:col-span-2">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create">
+      <h2 class="font-display text-lg font-bold">Create coupon</h2>
+      <div class="mt-4 space-y-3">
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Code</label>
+          <input name="code"
+                 required
+                 class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                 placeholder="WELCOME10">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Percent</label>
+            <input name="discount_percent"
+                   type="number"
+                   min="0"
+                   value="10"
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Amount (Ks)</label>
+            <input name="discount_amount"
+                   type="number"
+                   min="0"
+                   value="0"
+                   class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Min order (Ks)</label>
+          <input name="min_order_amount"
+                 type="number"
+                 min="0"
+                 value="0"
+                 class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Max uses (0 = unlimited)</label>
+          <input name="max_uses"
+                 type="number"
+                 min="0"
+                 value="0"
+                 class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Expires at</label>
+          <input name="expires_at"
+                 type="datetime-local"
+                 class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+        </div>
+        <button class="btn btn__primary btn__block">Create</button>
+      </div>
+    </form>
+    <div class="xl:col-span-3">
+      <div class="space-y-3">
+        {% for coupon in coupons %}
+          <div class="rounded-2xl border border-slate-200/80 bg-white px-5 py-4 shadow-sm">
+            <form method="post" class="space-y-3">
+              {% csrf_token %}
+              <input type="hidden" name="coupon_id" value="{{ coupon.id }}">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <input name="code"
+                       value="{{ coupon.code }}"
+                       class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold">
+                <p class="text-sm text-slate-500">
+                  Used {{ coupon.used_count }}{% if coupon.max_uses %} / {{ coupon.max_uses }}{% endif %}
+                  · {% if coupon.is_active %}Active{% else %}Off{% endif %}
+                </p>
+              </div>
+              <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                <input name="discount_percent"
+                       type="number"
+                       min="0"
+                       value="{{ coupon.discount_percent }}"
+                       class="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                       placeholder="%">
+                <input name="discount_amount"
+                       type="number"
+                       min="0"
+                       value="{{ coupon.discount_amount }}"
+                       class="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                       placeholder="Amount">
+                <input name="min_order_amount"
+                       type="number"
+                       min="0"
+                       value="{{ coupon.min_order_amount }}"
+                       class="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                       placeholder="Min order">
+                <input name="max_uses"
+                       type="number"
+                       min="0"
+                       value="{{ coupon.max_uses }}"
+                       class="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                       placeholder="Max uses">
+              </div>
+              <input name="expires_at"
+                     type="datetime-local"
+                     value="{% if coupon.expires_at %}{{ coupon.expires_at|date:'Y-m-d\TH:i' }}{% endif %}"
+                     class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <div class="flex flex-wrap gap-2">
+                <button name="action" value="update" class="btn btn__secondary">Save</button>
+                <button name="action" value="toggle" class="btn btn__ghost">
+                  {% if coupon.is_active %}Deactivate{% else %}Activate{% endif %}
+                </button>
+                <button name="action"
+                        value="delete"
+                        class="btn btn__danger"
+                        onclick="return confirm('Delete this coupon?')">Delete</button>
+              </div>
+            </form>
+          </div>
+        {% empty %}
+          <div class="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center text-slate-500">No coupons yet.</div>
+        {% endfor %}
+      </div>
+      {% include "dashboard/components/pagination.html" %}
+    </div>
+  </div>
+{% endblock %}

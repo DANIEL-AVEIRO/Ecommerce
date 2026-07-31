@@ -1,2 +1,0 @@
-light gallery
-product random

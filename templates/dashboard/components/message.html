@@ -1,0 +1,55 @@
+{% if messages %}
+  <div id="toast-root"
+       class="pointer-events-none fixed inset-x-0 top-16 z-[60] flex flex-col items-end gap-2 px-4 sm:top-[4.5rem] sm:px-6"
+       role="status"
+       aria-live="polite">
+    {% for message in messages %}
+      <div data-toast
+           class="pointer-events-auto flex w-full max-w-sm items-start gap-3 break-words rounded-lg border px-4 py-3 text-sm shadow-lg shadow-stone-900/10 {% if 'error' in message.tags %}border-red-200 bg-red-50 text-red-800 {% elif 'success' in message.tags %}border-emerald-200 bg-emerald-50 text-emerald-900 {% else %}border-stone-200 bg-white text-stone-900{% endif %}">
+        <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full {% if 'error' in message.tags %}bg-red-500/15 text-red-600 {% elif 'success' in message.tags %}bg-emerald-700/15 text-emerald-700 {% else %}bg-stone-900/10 text-stone-600{% endif %}"
+              aria-hidden="true">
+          {% if 'error' in message.tags %}
+            <svg class="h-3 w-3"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2.5">
+              <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          {% elif 'success' in message.tags %}
+            <svg class="h-3 w-3"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          {% else %}
+            <svg class="h-3 w-3"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2.5">
+              <circle cx="12" cy="12" r="9" />
+              <path stroke-linecap="round" d="M12 8v4m0 4h.01" />
+            </svg>
+          {% endif %}
+        </span>
+        <p class="min-w-0 flex-1 pt-0.5 leading-snug">{{ message }}</p>
+        <button type="button"
+                data-toast-close
+                class="shrink-0 rounded p-0.5 text-current/35 transition hover:bg-black/5 hover:text-current"
+                aria-label="Dismiss">
+          <svg class="h-4 w-4"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               aria-hidden="true">
+            <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

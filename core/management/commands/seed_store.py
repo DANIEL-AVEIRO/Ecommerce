@@ -1,199 +1,184 @@
-import mimetypes
-from pathlib import Path
-from urllib.error import URLError, HTTPError
-from urllib.request import Request, urlopen
-
-from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
-from django.db import transaction
 
-from core.management.commands.seed_catalog_data import CATEGORIES, PRODUCTS
-from models.product_models import (
+from core.models import (
     CategoryModel,
-    ProductImageModel,
+    CouponModel,
+    PaymentMethodModel,
     ProductModel,
     ProductVariantModel,
+    ShippingRegionModel,
 )
 
 
 class Command(BaseCommand):
-    help = "Seed realistic catalog data (30 products) with downloaded images"
-
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "--clear",
-            action="store_true",
-            help="Clear existing catalog data before seeding",
-        )
+    help = "Seed demo categories, products, regions, coupons, and payment methods"
 
     def handle(self, *args, **options):
-        if options["clear"]:
-            self.stdout.write("Clearing existing catalog…")
-            ProductImageModel.objects.all().delete()
-            ProductVariantModel.objects.all().delete()
-            ProductModel.objects.all().delete()
-            CategoryModel.objects.all().delete()
+        self.seed_payment_methods()
+        self.seed_regions()
+        self.seed_coupons()
+        self.seed_catalog()
+        self.stdout.write(self.style.SUCCESS("Demo data is ready."))
 
-        categories = {}
-        for item in CATEGORIES:
-            category, created = CategoryModel.objects.update_or_create(
+    def seed_payment_methods(self):
+        defaults = [
+            {
+                "name": "Cash on delivery",
+                "instructions": "Pay with cash when your order arrives.",
+                "account_info": "",
+                "requires_slip": False,
+                "is_cod": True,
+                "sort_order": 1,
+            },
+            {
+                "name": "KBZ Pay / Wave Money",
+                "instructions": "Transfer the total, then upload a payment screenshot on your order page.",
+                "account_info": "09XXXXXXXX",
+                "requires_slip": True,
+                "is_cod": False,
+                "sort_order": 2,
+            },
+            {
+                "name": "Bank transfer",
+                "instructions": "Transfer to our bank account, then upload your slip.",
+                "account_info": "Bank account details",
+                "requires_slip": True,
+                "is_cod": False,
+                "sort_order": 3,
+            },
+        ]
+        for item in defaults:
+            existing = PaymentMethodModel.objects.filter(name=item["name"]).first()
+            if existing:
+                continue
+            PaymentMethodModel.objects.create(
+                name=item["name"],
+                instructions=item["instructions"],
+                account_info=item["account_info"],
+                requires_slip=item["requires_slip"],
+                is_cod=item["is_cod"],
+                is_active=True,
+                sort_order=item["sort_order"],
+            )
+            self.stdout.write(f"  payment method: {item['name']}")
+
+    def seed_regions(self):
+        regions = [
+            ("Yangon", 3000, 6000),
+            ("Mandalay", 4000, 7000),
+            ("Naypyidaw", 3500, 6500),
+            ("Other", 5000, 9000),
+        ]
+        for name, standard_fee, express_fee in regions:
+            existing = ShippingRegionModel.objects.filter(name=name).first()
+            if existing:
+                continue
+            ShippingRegionModel.objects.create(
+                name=name,
+                standard_fee=standard_fee,
+                express_fee=express_fee,
+                is_active=True,
+            )
+            self.stdout.write(f"  region: {name}")
+
+    def seed_coupons(self):
+        existing = CouponModel.objects.filter(code="WELCOME10").first()
+        if not existing:
+            CouponModel.objects.create(
+                code="WELCOME10",
+                discount_percent=10,
+                discount_amount=0,
+                min_order_amount=50000,
+                max_uses=100,
+                is_active=True,
+            )
+            self.stdout.write("  coupon: WELCOME10")
+
+    def seed_catalog(self):
+        if ProductModel.objects.count() > 0:
+            self.stdout.write("  catalog already has products — skipped")
+            return
+
+        tops = CategoryModel.objects.filter(slug="tops").first()
+        if not tops:
+            tops = CategoryModel.objects.create(
+                name="Tops",
+                slug="tops",
+                description="Everyday tops and knits.",
+                sort_order=1,
+                is_active=True,
+            )
+
+        bottoms = CategoryModel.objects.filter(slug="bottoms").first()
+        if not bottoms:
+            bottoms = CategoryModel.objects.create(
+                name="Bottoms",
+                slug="bottoms",
+                description="Pants and easy layers.",
+                sort_order=2,
+                is_active=True,
+            )
+
+        products = [
+            {
+                "category": tops,
+                "name": "Half-Zip Knit Pullover",
+                "slug": "half-zip-knit-pullover",
+                "sku": "DN-TOP-001",
+                "regular_price": 89000,
+                "sale_price": 79000,
+                "material": "Cotton blend",
+                "description": "A soft half-zip knit for cool evenings.",
+                "featured": True,
+                "variants": [("Black", "#111111", "M"), ("Ivory", "#F5F0E8", "L")],
+            },
+            {
+                "category": tops,
+                "name": "Relaxed Linen Shirt",
+                "slug": "relaxed-linen-shirt",
+                "sku": "DN-TOP-002",
+                "regular_price": 65000,
+                "sale_price": None,
+                "material": "Linen",
+                "description": "Breathable linen shirt for warm Yangon days.",
+                "featured": True,
+                "variants": [("White", "#FFFFFF", "M"), ("Sage", "#9CAF88", "L")],
+            },
+            {
+                "category": bottoms,
+                "name": "Wide Crop Trouser",
+                "slug": "wide-crop-trouser",
+                "sku": "DN-BTM-001",
+                "regular_price": 72000,
+                "sale_price": None,
+                "material": "Cotton twill",
+                "description": "Easy wide-leg crop with a clean front.",
+                "featured": False,
+                "variants": [("Stone", "#C2B8A3", "M"), ("Navy", "#1F2A44", "L")],
+            },
+        ]
+
+        for item in products:
+            product = ProductModel.objects.create(
+                category=item["category"],
+                name=item["name"],
                 slug=item["slug"],
-                defaults={
-                    "name": item["name"],
-                    "description": item["description"],
-                    "sort_order": item["sort_order"],
-                    "is_active": True,
-                },
+                sku=item["sku"],
+                regular_price=item["regular_price"],
+                sale_price=item["sale_price"],
+                material=item["material"],
+                description=item["description"],
+                is_featured=item["featured"],
+                is_active=True,
             )
-            if not category.image:
-                self._attach_image(
-                    category,
-                    "image",
-                    item["image_url"],
-                    f"category-{item['slug']}.jpg",
-                    title=item["name"],
+            for color, hex_code, size in item["variants"]:
+                ProductVariantModel.objects.create(
+                    product=product,
+                    color=color,
+                    color_hex=hex_code,
+                    size=size,
+                    sku=f"{product.sku}-{color[:3].upper()}-{size}",
+                    stock=20,
+                    is_active=True,
                 )
-            categories[item["slug"]] = category
-            self.stdout.write(
-                f"  category: {category.name} ({'created' if created else 'updated'})"
-            )
-
-        created_products = 0
-        image_ok = 0
-        image_fail = 0
-
-        with transaction.atomic():
-            for index, item in enumerate(PRODUCTS, start=1):
-                category = categories[item["category"]]
-                product, created = ProductModel.objects.update_or_create(
-                    slug=item["slug"],
-                    defaults={
-                        "category": category,
-                        "name": item["name"],
-                        "sku": item["sku"],
-                        "price": item["price"],
-                        "compare_at_price": item["compare_at_price"],
-                        "material": item["material"],
-                        "description": item["description"],
-                        "is_featured": item["featured"],
-                        "is_active": True,
-                    },
-                )
-                if created:
-                    created_products += 1
-
-                for color, hex_code, size in item["variants"]:
-                    ProductVariantModel.objects.update_or_create(
-                        product=product,
-                        color=color,
-                        size=size,
-                        defaults={
-                            "color_hex": hex_code,
-                            "sku": f"{product.sku}-{color[:3].upper()}-{size}",
-                            "stock": 15 + (index % 20),
-                            "is_active": True,
-                        },
-                    )
-
-                if not product.images.exists():
-                    saved = self._create_product_image(
-                        product,
-                        item["image_url"],
-                        f"{item['slug']}.jpg",
-                    )
-                    if saved:
-                        image_ok += 1
-                    else:
-                        image_fail += 1
-
-                self.stdout.write(f"  [{index:02d}/30] {product.name}")
-
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"Seed complete — categories: {CategoryModel.objects.count()}, "
-                f"products: {ProductModel.objects.count()} "
-                f"(new: {created_products}), "
-                f"images saved: {image_ok}, failed: {image_fail}"
-            )
-        )
-
-    def _download(self, url):
-        request = Request(
-            url,
-            headers={"User-Agent": "DANIEL-Store-Seed/1.0"},
-        )
-        with urlopen(request, timeout=60) as response:
-            data = response.read()
-            content_type = response.headers.get_content_type()
-            if not data or len(data) < 1000:
-                raise OSError("Downloaded file too small or empty")
-            return data, content_type
-
-    def _generate_image(self, title, size=(800, 1000), color=(45, 74, 62)):
-        from io import BytesIO
-
-        from PIL import Image, ImageDraw, ImageFont
-
-        image = Image.new("RGB", size, color)
-        draw = ImageDraw.Draw(image)
-        draw.rectangle([0, 0, size[0], int(size[1] * 0.62)], fill=tuple(min(255, c + 25) for c in color))
-        draw.rectangle([40, 40, size[0] - 40, size[1] - 40], outline=(255, 255, 255), width=2)
-        try:
-            font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 36)
-        except OSError:
-            font = ImageFont.load_default()
-        text = title[:28]
-        bbox = draw.textbbox((0, 0), text, font=font)
-        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-        draw.text(
-            ((size[0] - tw) / 2, (size[1] - th) / 2),
-            text,
-            fill=(255, 255, 255),
-            font=font,
-        )
-        buffer = BytesIO()
-        image.save(buffer, format="JPEG", quality=90)
-        return buffer.getvalue(), "image/jpeg"
-
-    def _load_image_bytes(self, url, title, size=(800, 1000)):
-        try:
-            return self._download(url)
-        except (URLError, HTTPError, TimeoutError, OSError) as exc:
-            self.stderr.write(f"  download failed, generating local image ({title}): {exc}")
-            return self._generate_image(title, size=size)
-
-    def _attach_image(self, instance, field_name, url, filename, title=""):
-        try:
-            content, content_type = self._load_image_bytes(
-                url, title or filename, size=(1200, 800)
-            )
-            ext = mimetypes.guess_extension(content_type or "") or Path(filename).suffix or ".jpg"
-            if not filename.endswith(ext):
-                filename = f"{Path(filename).stem}{ext}"
-            getattr(instance, field_name).save(
-                filename,
-                ContentFile(content),
-                save=True,
-            )
-            return True
-        except (URLError, HTTPError, TimeoutError, OSError) as exc:
-            self.stderr.write(f"  image failed ({filename}): {exc}")
-            return False
-
-    def _create_product_image(self, product, url, filename):
-        try:
-            content, content_type = self._load_image_bytes(url, product.name)
-            ext = mimetypes.guess_extension(content_type or "") or ".jpg"
-            if not filename.endswith(ext):
-                filename = f"{Path(filename).stem}{ext}"
-            image = ProductImageModel(
-                product=product,
-                alt_text=product.name,
-                is_primary=True,
-                sort_order=0,
-            )
-            image.image.save(filename, ContentFile(content), save=True)
-            return True
-        except (URLError, HTTPError, TimeoutError, OSError) as exc:
-            self.stderr.write(f"  product image failed ({product.slug}): {exc}")
-            return False
+            self.stdout.write(f"  product: {product.name}")

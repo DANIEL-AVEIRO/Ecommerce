@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ page_title|default:"Dashboard" }} — DANIEL Admin{% endblock %}</title>
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("daniel-dashboard-theme");
+        var theme = saved;
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        if (theme === "dark") {
+          document.documentElement.classList.add("dark");
+        }
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) { }
+    })();
+  </script>
+  <link rel="stylesheet" href="{% static 'dashboard/css/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'dashboard/css/theme.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="{% static 'dashboard/js/tailwind-config.js' %}"></script>
+  <script src="{% static 'dashboard/js/lucide.min.js' %}"></script>
+</head>
+
+<body class="bg-slate-100 text-slate-900 antialiased">
+  {% include "dashboard/components/message.html" %}
+  <div class="flex min-h-screen">
+    {% include "dashboard/components/sidebar.html" %}
+    <div class="flex min-h-screen min-w-0 flex-1 flex-col">
+      {% include "dashboard/components/topbar.html" %}
+      <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        {% block content %}{% endblock %}
+      </main>
+      {% include "dashboard/components/footer.html" %}
+    </div>
+  </div>
+  <div id="sidebar-backdrop" class="fixed inset-0 z-30 hidden bg-ink-950/40 lg:hidden"></div>
+  <script src="{% static 'dashboard/js/theme.js' %}"></script>
+  <script src="{% static 'dashboard/js/main.js' %}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+
+</html>

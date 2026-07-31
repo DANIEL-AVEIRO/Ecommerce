@@ -1,0 +1,122 @@
+{% extends "dashboard/components/base.html" %}
+{% block content %}
+  {% include "dashboard/components/table_filters.html" %}
+  <div class="grid gap-6 xl:grid-cols-5">
+    <form method="post"
+          enctype="multipart/form-data"
+          class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm xl:col-span-2">
+      {% csrf_token %}
+      <h2 class="font-display text-lg font-bold">Add category</h2>
+      <div class="mt-4 space-y-3">
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Name</label>
+          <input name="name"
+                 required
+                 class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                 placeholder="Tops">
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Description</label>
+          <textarea name="description"
+                    rows="3"
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                    placeholder="Short description"></textarea>
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Sort order</label>
+          <input name="sort_order"
+                 type="number"
+                 min="0"
+                 value="0"
+                 class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Image</label>
+          <input name="image"
+                 type="file"
+                 accept="image/*"
+                 class="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
+        </div>
+        <button class="btn btn__primary btn__block">Save category</button>
+      </div>
+    </form>
+
+    <div class="xl:col-span-3">
+      <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-left text-sm">
+            <thead class="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+              <tr>
+                <th class="px-4 py-3 font-semibold">Category</th>
+                <th class="px-4 py-3 font-semibold">Slug</th>
+                <th class="px-4 py-3 font-semibold">Sort</th>
+                <th class="px-4 py-3 font-semibold">Products</th>
+                <th class="px-4 py-3 font-semibold">Status</th>
+                <th class="px-4 py-3 font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              {% for category in categories %}
+                <tr class="table__row__hover">
+                  <td class="px-4 py-3">
+                    <div class="flex items-center gap-3">
+                      {% if category.image %}
+                        <img src="{{ category.image.url }}"
+                             alt=""
+                             class="h-10 w-10 rounded-lg object-cover">
+                      {% else %}
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
+                          <i data-lucide="folder" class="h-4 w-4"></i>
+                        </div>
+                      {% endif %}
+                      <div class="min-w-0">
+                        <p class="font-semibold">{{ category.name }}</p>
+                        {% if category.description %}
+                          <p class="truncate text-xs text-slate-400">{{ category.description }}</p>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-slate-500">{{ category.slug }}</td>
+                  <td class="px-4 py-3">{{ category.sort_order }}</td>
+                  <td class="px-4 py-3">{{ category.products.count }}</td>
+                  <td class="px-4 py-3">
+                    {% if category.is_active %}
+                      <span class="rounded-md bg-teal-50 px-2 py-1 text-xs font-medium text-teal-800">Active</span>
+                    {% else %}
+                      <span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500">Hidden</span>
+                    {% endif %}
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="flex flex-nowrap items-center gap-2 whitespace-nowrap">
+                      <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="category_id" value="{{ category.id }}">
+                        <input type="hidden" name="action" value="toggle_active">
+                        <button class="btn btn__ghost btn__sm">
+                          {% if category.is_active %}Hide{% else %}Show{% endif %}
+                        </button>
+                      </form>
+                      <form method="post"
+                            onsubmit="return confirm('Delete this category?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="category_id" value="{{ category.id }}">
+                        <input type="hidden" name="action" value="delete">
+                        <button class="btn btn__danger btn__sm">Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6" class="px-4 py-10 text-center text-slate-500">No categories yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% include "dashboard/components/pagination.html" %}
+    </div>
+  </div>
+{% endblock %}

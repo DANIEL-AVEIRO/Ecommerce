@@ -1,52 +1,61 @@
 {% extends "website/components/base.html" %}
-{% load store_tags %}
-
 {% block title %}{{ category.name }} — DANIEL{% endblock %}
-
 {% block content %}
-<div class="relative overflow-hidden border-b border-stone-900/5">
-  <div class="absolute inset-0 bg-cover bg-center" style="{% if category.image %}background-image: linear-gradient(to right, rgba(18,20,26,0.72), rgba(18,20,26,0.25)), url('{{ category.image.url }}');{% else %}background: #1c1917;{% endif %}" aria-hidden="true"></div>
-  <div class="relative mx-auto max-w-6xl px-4 py-16 sm:py-20">
-    <p class="text-xs font-semibold uppercase tracking-widest text-white/60">Category</p>
-    <h1 class="mt-2 break-words font-display text-3xl font-bold tracking-tight text-white sm:text-5xl">{{ category.name }}</h1>
-    <p class="mt-3 max-w-md text-sm text-white/75 sm:text-base">{{ category.description|default:"Explore the collection." }}</p>
+  <div class="relative overflow-hidden border-b border-stone-900/5">
+    <div class="absolute inset-0 bg-cover bg-center"
+         style="{% if category.image %}background-image: linear-gradient(to right, rgba(18,20,26,0.72), rgba(18,20,26,0.25)), url('{{ category.image.url }}');
+                {% else %}background: #1c1917;
+                {% endif %}"
+         aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-6xl px-4 py-16 sm:py-20">
+      <p class="text-xs font-semibold uppercase tracking-widest text-white/60">Category</p>
+      <h1 class="mt-2 break-words font-display text-3xl font-bold tracking-tight text-white sm:text-5xl">{{ category.name }}</h1>
+      <p class="mt-3 max-w-md text-sm text-white/75 sm:text-base">{{ category.description|default:"Explore the collection." }}</p>
+    </div>
   </div>
-</div>
-
-<div class="mx-auto max-w-6xl px-4 py-10">
-  <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-    <p class="text-sm text-stone-900/55">{{ page_obj.paginator.count }} product{{ page_obj.paginator.count|pluralize }}</p>
-    <form method="get" class="flex items-center gap-2 text-sm">
-      <label for="cat-sort" class="text-stone-900/45">Sort</label>
-      <select id="cat-sort" name="sort" onchange="this.form.submit()" class="rounded-md border border-stone-900/10 bg-white px-2 py-1.5">
-        <option value="featured" {% if request.GET.sort == 'featured' or not request.GET.sort %}selected{% endif %}>Featured</option>
-        <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest</option>
-        <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Price: low to high</option>
-        <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Price: high to low</option>
-      </select>
-    </form>
-  </div>
-  <div class="grid gap-6 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
-    {% for product in products %}
-      {% include "website/components/product_card.html" %}
-    {% empty %}
-      <div class="flex flex-col items-center justify-center py-16 text-center sm:col-span-2 md:col-span-3 lg:col-span-4">
-        <h2 class="font-display text-2xl font-bold">Nothing here yet</h2>
-        <p class="mt-2 text-sm text-stone-900/60">This category is empty — browse the full shop instead.</p>
-        <a href="{% url 'shop' %}" class="btn-primary mt-6">Browse shop</a>
-      </div>
-    {% endfor %}
-  </div>
-  {% if page_obj.has_other_pages %}
-  <nav class="mt-10 flex justify-center gap-2" aria-label="Pagination">
-    {% if page_obj.has_previous %}
-    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="btn-ghost !py-2">Previous</a>
+  <div class="mx-auto max-w-6xl px-4 py-10">
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <p class="text-sm text-stone-900/55">{{ page_obj.paginator.count }} product{{ page_obj.paginator.count|pluralize }}</p>
+      <form method="get" class="flex items-center gap-2 text-sm">
+        <label for="cat-sort" class="text-stone-900/45">Sort</label>
+        <select id="cat-sort"
+                name="sort"
+                onchange="this.form.submit()"
+                class="rounded-md border border-stone-900/10 bg-white px-2 py-1.5">
+          <option value="featured"
+                  {% if request.GET.sort == 'featured' or not request.GET.sort %}selected{% endif %}>Featured</option>
+          <option value="newest"
+                  {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest</option>
+          <option value="price_asc"
+                  {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Price: low to high</option>
+          <option value="price_desc"
+                  {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Price: high to low</option>
+        </select>
+      </form>
+    </div>
+    <div class="grid gap-6 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
+      {% for product in products %}
+        {% include "website/components/product_card.html" %}
+      {% empty %}
+        <div class="flex flex-col items-center justify-center py-16 text-center sm:col-span-2 md:col-span-3 lg:col-span-4">
+          <h2 class="font-display text-2xl font-bold">Nothing here yet</h2>
+          <p class="mt-2 text-sm text-stone-900/60">This category is empty — browse the full shop instead.</p>
+          <a href="{% url 'shop' %}" class="btn__primary mt-6">Browse shop</a>
+        </div>
+      {% endfor %}
+    </div>
+    {% if page_obj.has_other_pages %}
+      <nav class="mt-10 flex justify-center gap-2" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+             class="btn__ghost !py-2">Previous</a>
+        {% endif %}
+        <span class="flex items-center px-3 text-sm text-stone-900/55">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+             class="btn__ghost !py-2">Next</a>
+        {% endif %}
+      </nav>
     {% endif %}
-    <span class="flex items-center px-3 text-sm text-stone-900/55">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-    {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="btn-ghost !py-2">Next</a>
-    {% endif %}
-  </nav>
-  {% endif %}
-</div>
+  </div>
 {% endblock %}

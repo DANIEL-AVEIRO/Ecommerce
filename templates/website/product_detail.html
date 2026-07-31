@@ -1,170 +1,332 @@
 {% extends "website/components/base.html" %}
-{% load store_tags %}
-
+{% load static %}
+{% load humanize %}
 {% block title %}{{ product.name }} — DANIEL{% endblock %}
-
 {% block content %}
-<div class="mx-auto max-w-6xl px-4 py-8 sm:py-10">
-  <nav class="mb-8 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-stone-900/50">
-    <a href="{% url 'index' %}" class="hover:text-emerald-700">Home</a>
-    <span>/</span>
-    <a href="{% url 'shop' %}" class="hover:text-emerald-700">Shop</a>
-    <span>/</span>
-    <a href="{% url 'category' product.category.slug %}" class="hover:text-emerald-700">{{ product.category.name }}</a>
-    <span>/</span>
-    <span class="min-w-0 break-words text-stone-900">{{ product.name }}</span>
-  </nav>
-
-  <div class="grid gap-8 lg:grid-cols-2 lg:gap-10">
-    <div class="space-y-3">
-      <div class="aspect-[4/5] overflow-hidden rounded-lg bg-stone-100">
-        <img id="main-image" src="{{ product.primary_image_url }}" alt="{{ product.name }}" class="h-full w-full object-cover">
-      </div>
-      {% if product.images.all %}
-      <div class="grid grid-cols-4 gap-2 sm:gap-3">
-        {% for image in product.images.all %}
-        <button type="button" class="aspect-square overflow-hidden rounded-lg border border-stone-900/10 bg-stone-100 transition hover:border-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" onclick="document.getElementById('main-image').src='{{ image.image.url }}'">
-          <img src="{{ image.image.url }}" alt="" class="h-full w-full object-cover" loading="lazy">
+  <div class="mx-auto max-w-6xl px-4 py-8 sm:py-10">
+    <nav class="mb-8 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-stone-900/50">
+      <a href="{% url 'index' %}" class="hover:text-emerald-700">Home</a>
+      <span>/</span>
+      <a href="{% url 'shop' %}" class="hover:text-emerald-700">Shop</a>
+      <span>/</span>
+      <a href="{% url 'category' product.category.slug %}"
+         class="hover:text-emerald-700">{{ product.category.name }}</a>
+      <span>/</span>
+      <span class="min-w-0 break-words text-stone-900">{{ product.name }}</span>
+    </nav>
+    <div class="grid gap-8 lg:grid-cols-2 lg:gap-10">
+      <div class="space-y-3">
+        <button type="button"
+                id="open-gallery"
+                class="aspect-[4/5] w-full overflow-hidden rounded-lg bg-stone-100">
+          <img id="main-image"
+               src="{{ product.primary_image_url }}"
+               alt="{{ product.name }}"
+               class="h-full w-full object-cover">
         </button>
-        {% endfor %}
+        {% if product.images.all %}
+          <div class="grid grid-cols-4 gap-2 sm:gap-3">
+            {% for image in product.images.all %}
+              <button type="button"
+                      class="gallery__thumb aspect-square overflow-hidden rounded-lg border border-stone-900/10 bg-stone-100 transition hover:border-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                      data-full="{{ image.image.url }}">
+                <img src="{{ image.image.url }}"
+                     alt=""
+                     class="h-full w-full object-cover"
+                     loading="lazy">
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
-      {% endif %}
+      <div class="min-w-0">
+        <p class="text-xs font-medium uppercase tracking-wider text-emerald-700/80">{{ product.category.name }}</p>
+        <h1 class="mt-2 break-words font-display text-3xl font-bold tracking-tight sm:text-4xl">{{ product.name }}</h1>
+        <div class="mt-4 flex flex-wrap items-baseline gap-2">
+          <p class="text-2xl font-semibold">{{ product.selling_price|intcomma }} Ks</p>
+          {% if product.is_on_sale %}<p class="text-sm text-stone-900/40 line-through">{{ product.regular_price|intcomma }} Ks</p>{% endif %}
+        </div>
+        {% if review_count %}
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            {% include "website/components/star_rating.html" with rating=average_stars star_size="sm" %}
+            <p class="text-sm text-stone-900/60">
+              <span class="font-semibold text-stone-900">{{ average_rating }}</span>
+              · {{ review_count }} review{{ review_count|pluralize }}
+            </p>
+          </div>
+        {% endif %}
+        {% if in_stock %}
+          <p class="mt-2 text-sm font-medium text-emerald-700">In stock · {{ total_stock }} available</p>
+        {% else %}
+          <p class="mt-2 text-sm font-medium text-red-700">Out of stock</p>
+        {% endif %}
+        <p class="mt-4 leading-relaxed text-stone-900/65">{{ product.description }}</p>
+        <form action="{% url 'cart_add' %}" method="post" class="mt-8 space-y-6">
+          {% csrf_token %}
+          <input type="hidden" name="product_id" value="{{ product.id }}">
+          <input type="hidden" name="next" value="{% url 'cart' %}">
+          {% if colors %}
+            <div>
+              <p class="text-sm font-semibold">Color</p>
+              <div class="mt-3 flex flex-wrap gap-2">
+                {% for color in colors %}
+                  <label class="cursor-pointer">
+                    <input type="radio"
+                           name="color"
+                           value="{{ color }}"
+                           class="peer sr-only"
+                           {% if forloop.first %}checked{% endif %}>
+                    <span class="inline-flex items-center justify-center rounded-md border border-stone-900/15 px-3 py-2 text-sm font-medium transition peer-checked:border-stone-900 peer-checked:bg-stone-900 peer-checked:text-white">{{ color }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+          {% if sizes %}
+            <div>
+              <p class="text-sm font-semibold">Size</p>
+              <div class="mt-3 flex flex-wrap gap-2">
+                {% for size in sizes %}
+                  <label class="cursor-pointer">
+                    <input type="radio"
+                           name="size"
+                           value="{{ size }}"
+                           class="peer sr-only"
+                           {% if forloop.first %}checked{% endif %}>
+                    <span class="inline-flex min-w-12 items-center justify-center rounded-md border border-stone-900/15 px-3 py-2 text-sm font-medium transition peer-checked:border-stone-900 peer-checked:bg-stone-900 peer-checked:text-white">{{ size }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+              <p class="mt-2 text-xs text-stone-900/45">Unsure? Size up for a relaxed fit — or <a href="{% url 'contact' %}" class="text-emerald-700 underline">ask us</a>.</p>
+            </div>
+          {% endif %}
+          <div>
+            <label for="qty" class="label">Quantity</label>
+            <input id="qty"
+                   type="number"
+                   name="quantity"
+                   value="1"
+                   min="1"
+                   max="{% if total_stock %}{{ total_stock }}{% else %}1{% endif %}"
+                   class="field !mt-2 !w-24"
+                   {% if not in_stock %}disabled{% endif %}>
+          </div>
+          <div class="flex flex-col gap-3 sm:flex-row">
+            {% if not in_stock %}
+              <button type="button" class="btn__primary flex-1 opacity-50" disabled>Out of stock</button>
+            {% elif user.is_authenticated %}
+              <button type="submit" class="btn__primary flex-1">Add to cart</button>
+            {% else %}
+              <a href="{% url 'login' %}?next={% url 'product_detail' product.slug %}"
+                 class="btn__primary flex-1">Sign in to buy</a>
+            {% endif %}
+          </div>
+        </form>
+        {% if user.is_authenticated %}
+          <form action="{% url 'wishlist_add' %}" method="post" class="mt-3">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            <input type="hidden"
+                   name="next"
+                   value="{% url 'product_detail' product.slug %}">
+            <button type="submit" class="btn__ghost w-full">Save to wishlist</button>
+          </form>
+        {% endif %}
+        <div class="mt-8 flex flex-wrap gap-2 text-xs font-medium text-stone-900/55">
+          <span class="rounded-md border border-stone-900/10 bg-white px-2.5 py-1">COD</span>
+          <span class="rounded-md border border-stone-900/10 bg-white px-2.5 py-1">KBZ Pay</span>
+          <span class="rounded-md border border-stone-900/10 bg-white px-2.5 py-1">Wave Money</span>
+          <span class="rounded-md border border-stone-900/10 bg-white px-2.5 py-1">Bank transfer</span>
+        </div>
+        <dl class="mt-8 space-y-4 border-t border-stone-900/10 pt-8 text-sm">
+          <div class="flex justify-between gap-4">
+            <dt class="shrink-0 text-stone-900/50">SKU</dt>
+            <dd class="min-w-0 break-words text-right font-medium">
+              {{ product.sku }}
+            </dd>
+          </div>
+          {% if product.material %}<div class="flex justify-between gap-4"><dt class="shrink-0 text-stone-900/50">Material</dt><dd class="min-w-0 break-words text-right font-medium">{{ product.material }}</dd></div>{% endif %}
+          <div class="flex justify-between gap-4">
+            <dt class="shrink-0 text-stone-900/50">Shipping</dt>
+            <dd class="min-w-0 text-right font-medium">
+              2–4 days in Yangon
+            </dd>
+          </div>
+        </dl>
+        <div class="mt-8 space-y-3 border-t border-stone-900/10 pt-8">
+          <details class="accordion group rounded-lg border border-stone-900/10 bg-white p-4">
+            <summary class="flex cursor-pointer items-center justify-between gap-3 text-sm font-semibold">
+              Care
+              <span class="accordion__icon text-stone-900/35">+</span>
+            </summary>
+            <div class="accordion__body">
+              <div class="accordion__inner">
+                <p class="text-sm leading-relaxed text-stone-900/60">
+                  Wash cold, hang dry when possible. Avoid high heat to keep the hand-feel soft. Spot clean delicate knits.
+                </p>
+              </div>
+            </div>
+          </details>
+          <details class="accordion group rounded-lg border border-stone-900/10 bg-white p-4">
+            <summary class="flex cursor-pointer items-center justify-between gap-3 text-sm font-semibold">
+              Shipping
+              <span class="accordion__icon text-stone-900/35">+</span>
+            </summary>
+            <div class="accordion__body">
+              <div class="accordion__inner">
+                <p class="text-sm leading-relaxed text-stone-900/60">
+                  Standard 3,000 Ks · Express 6,000 Ks · Free standard over 150,000 Ks. See full <a href="{% url 'shipping' %}" class="text-emerald-700 underline">shipping details</a>.
+                </p>
+              </div>
+            </div>
+          </details>
+          <details class="accordion group rounded-lg border border-stone-900/10 bg-white p-4">
+            <summary class="flex cursor-pointer items-center justify-between gap-3 text-sm font-semibold">
+              Returns
+              <span class="accordion__icon text-stone-900/35">+</span>
+            </summary>
+            <div class="accordion__body">
+              <div class="accordion__inner">
+                <p class="text-sm leading-relaxed text-stone-900/60">
+                  Unused items with tags can be returned within 7 days. Read our <a href="{% url 'returns' %}" class="text-emerald-700 underline">returns policy</a>.
+                </p>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
     </div>
-
-    <div class="min-w-0">
-      <p class="text-xs font-medium uppercase tracking-wider text-emerald-700/80">{{ product.category.name }}</p>
-      <h1 class="mt-2 break-words font-display text-3xl font-bold tracking-tight sm:text-4xl">{{ product.name }}</h1>
-      <div class="mt-4 flex flex-wrap items-baseline gap-2">
-        <p class="text-2xl font-semibold">{{ product.price|money }}</p>
-        {% if product.is_on_sale %}<p class="text-sm text-stone-900/40 line-through">{{ product.compare_at_price|money }}</p>{% endif %}
-      </div>
-      <p class="mt-2 text-sm font-medium text-emerald-700">In stock · Ready to ship</p>
-      <p class="mt-4 leading-relaxed text-stone-900/65">{{ product.description }}</p>
-
-      <form action="{% url 'cart_add' %}" method="post" class="mt-8 space-y-6">
-        {% csrf_token %}
-        <input type="hidden" name="product_id" value="{{ product.id }}">
-        <input type="hidden" name="next" value="{% url 'cart' %}">
-
-        {% if colors %}
+    <section class="mt-20 border-t border-stone-900/10 pt-12">
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p class="text-sm font-semibold">Color</p>
-          <div class="mt-3 flex flex-wrap gap-2">
-            {% for color in colors %}
-            <label class="cursor-pointer">
-              <input type="radio" name="color" value="{{ color }}" class="peer sr-only" {% if forloop.first %}checked{% endif %}>
-              <span class="inline-flex items-center justify-center rounded-md border border-stone-900/15 px-3 py-2 text-sm font-medium transition peer-checked:border-stone-900 peer-checked:bg-stone-900 peer-checked:text-white">{{ color }}</span>
-            </label>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
-
-        {% if sizes %}
-        <div>
-          <p class="text-sm font-semibold">Size</p>
-          <div class="mt-3 flex flex-wrap gap-2">
-            {% for size in sizes %}
-            <label class="cursor-pointer">
-              <input type="radio" name="size" value="{{ size }}" class="peer sr-only" {% if forloop.first %}checked{% endif %}>
-              <span class="inline-flex min-w-12 items-center justify-center rounded-md border border-stone-900/15 px-3 py-2 text-sm font-medium transition peer-checked:border-stone-900 peer-checked:bg-stone-900 peer-checked:text-white">{{ size }}</span>
-            </label>
-            {% endfor %}
-          </div>
-          <p class="mt-2 text-xs text-stone-900/45">Unsure? Size up for a relaxed fit — or <a href="{% url 'contact' %}" class="text-emerald-700 underline">ask us</a>.</p>
-        </div>
-        {% endif %}
-
-        <div>
-          <label for="qty" class="label">Quantity</label>
-          <input id="qty" type="number" name="quantity" value="1" min="1" max="10" class="field !mt-2 !w-24">
-        </div>
-
-        <div class="flex flex-col gap-3 sm:flex-row">
-          {% if user.is_authenticated %}
-          <button type="submit" class="btn-primary flex-1">Add to cart</button>
+          <p class="text-xs font-semibold uppercase tracking-widest text-emerald-700/80">Customer feedback</p>
+          <h2 class="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">Reviews</h2>
+          {% if review_count %}
+            <div class="mt-3 flex flex-wrap items-center gap-3">
+              {% include "website/components/star_rating.html" with rating=average_stars %}
+              <p class="text-sm text-stone-900/60">
+                <span class="font-semibold text-stone-900">{{ average_rating }}</span>
+                average from {{ review_count }} review{{ review_count|pluralize }}
+              </p>
+            </div>
           {% else %}
-          <a href="{% url 'login' %}?next={% url 'product_detail' product.slug %}" class="btn-primary flex-1">Sign in to buy</a>
+            <p class="mt-3 text-sm text-stone-900/55">No reviews yet — be the first to share how it fits.</p>
           {% endif %}
         </div>
-      </form>
+      </div>
 
-      {% if user.is_authenticated %}
-      <form action="{% url 'wishlist_add' %}" method="post" class="mt-3">
-        {% csrf_token %}
-        <input type="hidden" name="product_id" value="{{ product.id }}">
-        <input type="hidden" name="next" value="{% url 'product_detail' product.slug %}">
-        <button type="submit" class="btn-ghost w-full">Save to wishlist</button>
-      </form>
+      <div class="mt-10 space-y-4">
+        {% for review in reviews %}
+          <article class="review__card rounded-xl border border-stone-900/10 bg-white p-5 sm:p-6">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div class="flex min-w-0 items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-700/10 text-sm font-bold text-emerald-700">
+                  {{ review.user.username|slice:":1"|upper }}
+                </div>
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-semibold">{{ review.user.username }}</p>
+                  <p class="mt-0.5 text-xs text-stone-900/40">
+                    {{ review.created_at|date:"M j, Y" }}
+                    {% if review.is_verified_purchase %}
+                      · <span class="text-emerald-700">Verified purchase</span>
+                    {% endif %}
+                  </p>
+                </div>
+              </div>
+              {% include "website/components/star_rating.html" with rating=review.rating star_size="sm" %}
+            </div>
+            <p class="mt-4 text-sm leading-relaxed text-stone-900/70">{{ review.comment }}</p>
+          </article>
+        {% empty %}
+          <div class="rounded-xl border border-dashed border-stone-900/15 bg-stone-50 px-5 py-10 text-center">
+            <p class="text-sm text-stone-900/55">Reviews will show up here once customers share their thoughts.</p>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if user.is_authenticated and can_review %}
+        <form action="{% url 'product_review' product.slug %}"
+              method="post"
+              class="review__form mt-10 rounded-xl border border-stone-900/10 bg-white p-5 shadow-sm sm:p-6">
+          {% csrf_token %}
+          <h3 class="font-display text-lg font-bold tracking-tight">Write a review</h3>
+          <p class="mt-1 text-sm text-stone-900/55">Rate the fit, feel, and quality. Reviews are checked before they appear.</p>
+          <div class="mt-5">
+            <p class="label">Your rating</p>
+            <div class="star__picker mt-3" role="radiogroup" aria-label="Rating">
+              <input type="radio" name="rating" value="5" id="rating-5" checked>
+              <label for="rating-5" title="5 stars">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.77l-5.8 3.05 1.11-6.47-4.7-4.58 6.49-.94L12 2.5z" /></svg>
+                <span class="sr-only">5 stars</span>
+              </label>
+              <input type="radio" name="rating" value="4" id="rating-4">
+              <label for="rating-4" title="4 stars">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.77l-5.8 3.05 1.11-6.47-4.7-4.58 6.49-.94L12 2.5z" /></svg>
+                <span class="sr-only">4 stars</span>
+              </label>
+              <input type="radio" name="rating" value="3" id="rating-3">
+              <label for="rating-3" title="3 stars">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.77l-5.8 3.05 1.11-6.47-4.7-4.58 6.49-.94L12 2.5z" /></svg>
+                <span class="sr-only">3 stars</span>
+              </label>
+              <input type="radio" name="rating" value="2" id="rating-2">
+              <label for="rating-2" title="2 stars">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.77l-5.8 3.05 1.11-6.47-4.7-4.58 6.49-.94L12 2.5z" /></svg>
+                <span class="sr-only">2 stars</span>
+              </label>
+              <input type="radio" name="rating" value="1" id="rating-1">
+              <label for="rating-1" title="1 star">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.77l-5.8 3.05 1.11-6.47-4.7-4.58 6.49-.94L12 2.5z" /></svg>
+                <span class="sr-only">1 star</span>
+              </label>
+            </div>
+          </div>
+          <div class="mt-5">
+            <label for="comment" class="label">Comment</label>
+            <textarea id="comment"
+                      name="comment"
+                      rows="4"
+                      required
+                      class="field"
+                      placeholder="How does it feel / fit?"></textarea>
+          </div>
+          <button type="submit" class="btn__primary mt-5">Submit review</button>
+        </form>
+      {% elif user.is_authenticated %}
+        <p class="mt-8 rounded-xl border border-stone-900/10 bg-stone-50 px-5 py-4 text-sm text-stone-900/60">
+          Reviews are available after your order for this product is delivered.
+        </p>
+      {% else %}
+        <p class="mt-8 rounded-xl border border-stone-900/10 bg-stone-50 px-5 py-4 text-sm text-stone-900/60">
+          <a href="{% url 'login' %}?next={% url 'product_detail' product.slug %}"
+             class="font-semibold text-emerald-700 underline">Sign in</a>
+          to leave a review.
+        </p>
       {% endif %}
-
-      <div class="mt-8 flex flex-wrap gap-2 text-xs font-medium text-stone-900/55">
-        <span class="rounded-md border border-stone-900/10 bg-white px-2.5 py-1">COD</span>
-        <span class="rounded-md border border-stone-900/10 bg-white px-2.5 py-1">KBZ Pay</span>
-        <span class="rounded-md border border-stone-900/10 bg-white px-2.5 py-1">Wave Money</span>
-        <span class="rounded-md border border-stone-900/10 bg-white px-2.5 py-1">Bank transfer</span>
-      </div>
-
-      <dl class="mt-8 space-y-4 border-t border-stone-900/10 pt-8 text-sm">
-        <div class="flex justify-between gap-4"><dt class="shrink-0 text-stone-900/50">SKU</dt><dd class="min-w-0 break-words text-right font-medium">{{ product.sku }}</dd></div>
-        {% if product.material %}<div class="flex justify-between gap-4"><dt class="shrink-0 text-stone-900/50">Material</dt><dd class="min-w-0 break-words text-right font-medium">{{ product.material }}</dd></div>{% endif %}
-        <div class="flex justify-between gap-4"><dt class="shrink-0 text-stone-900/50">Shipping</dt><dd class="min-w-0 text-right font-medium">2–4 days in Yangon</dd></div>
-      </dl>
-
-      <div class="mt-8 space-y-3 border-t border-stone-900/10 pt-8">
-        <details class="accordion group rounded-lg border border-stone-900/10 bg-white p-4">
-          <summary class="flex cursor-pointer items-center justify-between gap-3 text-sm font-semibold">
-            Care
-            <span class="accordion-icon text-stone-900/35">+</span>
-          </summary>
-          <div class="accordion-body">
-            <div class="accordion-inner">
-              <p class="text-sm leading-relaxed text-stone-900/60">
-                Wash cold, hang dry when possible. Avoid high heat to keep the hand-feel soft. Spot clean delicate knits.
-              </p>
-            </div>
-          </div>
-        </details>
-        <details class="accordion group rounded-lg border border-stone-900/10 bg-white p-4">
-          <summary class="flex cursor-pointer items-center justify-between gap-3 text-sm font-semibold">
-            Shipping
-            <span class="accordion-icon text-stone-900/35">+</span>
-          </summary>
-          <div class="accordion-body">
-            <div class="accordion-inner">
-              <p class="text-sm leading-relaxed text-stone-900/60">
-                Standard 3,000 Ks · Express 6,000 Ks · Free standard over 150,000 Ks. See full <a href="{% url 'shipping' %}" class="text-emerald-700 underline">shipping details</a>.
-              </p>
-            </div>
-          </div>
-        </details>
-        <details class="accordion group rounded-lg border border-stone-900/10 bg-white p-4">
-          <summary class="flex cursor-pointer items-center justify-between gap-3 text-sm font-semibold">
-            Returns
-            <span class="accordion-icon text-stone-900/35">+</span>
-          </summary>
-          <div class="accordion-body">
-            <div class="accordion-inner">
-              <p class="text-sm leading-relaxed text-stone-900/60">
-                Unused items with tags can be returned within 7 days. Read our <a href="{% url 'returns' %}" class="text-emerald-700 underline">returns policy</a>.
-              </p>
-            </div>
-          </div>
-        </details>
-      </div>
-    </div>
+    </section>
+    {% if related_products %}
+      <section class="mt-20">
+        <h2 class="font-display text-2xl font-bold">You may also like</h2>
+        <p class="mt-2 text-sm text-stone-900/55">More from {{ product.category.name }}.</p>
+        <div class="mt-8 grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
+          {% for related in related_products %}
+            {% include "website/components/product_card.html" with product=related %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
   </div>
-
-  {% if related_products %}
-  <section class="mt-20">
-    <h2 class="font-display text-2xl font-bold">You may also like</h2>
-    <p class="mt-2 text-sm text-stone-900/55">More from {{ product.category.name }}.</p>
-    <div class="mt-8 grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
-      {% for product in related_products %}
-        {% include "website/components/product_card.html" %}
-      {% endfor %}
-    </div>
-  </section>
-  {% endif %}
-</div>
+  <div id="gallery-modal"
+       class="fixed inset-0 z-[60] hidden items-center justify-center bg-stone-950/80 p-4">
+    <button type="button"
+            id="close-gallery"
+            class="absolute right-4 top-4 rounded-md bg-white/10 px-3 py-2 text-sm text-white">Close</button>
+    <img id="gallery-full"
+         src=""
+         alt=""
+         class="max-h-[90vh] max-w-full rounded-lg object-contain">
+  </div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'website/js/product-gallery.js' %}"></script>
 {% endblock %}

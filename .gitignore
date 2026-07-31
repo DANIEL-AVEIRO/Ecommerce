@@ -1,4 +1,4 @@
-# Python
+# Python cache / build
 __pycache__/
 *.py[cod]
 *$py.class
@@ -9,18 +9,18 @@ __pycache__/
 dist/
 build/
 
-# Virtual environments
+# Virtual environments (never commit)
 .venv/
 venv/
 env/
 ENV/
 
-# Environment / secrets
+# Secrets (never commit — use .env.example instead)
 .env
 .env.local
 .env.*.local
 
-# Django
+# Django local runtime
 *.log
 db.sqlite3-journal
 staticfiles/
@@ -33,10 +33,10 @@ staticfiles/
 .DS_Store
 Thumbs.db
 
-# Cursor (local)
+# Cursor local settings
 .cursor/
 
-# Testing / coverage
+# Testing / coverage tools
 .coverage
 htmlcov/
 .pytest_cache/

@@ -1,0 +1,51 @@
+{% extends "dashboard/components/base.html" %}
+{% block content %}
+  {% include "dashboard/components/table_filters.html" %}
+  <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-3 font-semibold">Email</th>
+            <th class="px-4 py-3 font-semibold">Status</th>
+            <th class="px-4 py-3 font-semibold">Joined</th>
+            <th class="px-4 py-3 font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for subscriber in subscribers %}
+            <tr class="table__row__hover">
+              <td class="px-4 py-3 font-medium">{{ subscriber.email }}</td>
+              <td class="px-4 py-3">
+                {% if subscriber.is_active %}
+                  <span class="rounded-md bg-teal-50 px-2 py-1 text-xs font-medium text-teal-800">Active</span>
+                {% else %}
+                  <span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500">Inactive</span>
+                {% endif %}
+              </td>
+              <td class="whitespace-nowrap px-4 py-3 text-slate-500">{{ subscriber.created_at|date:"M j, Y" }}</td>
+              <td class="px-4 py-3">
+                <form method="post" class="flex flex-wrap gap-2">
+                  {% csrf_token %}
+                  <input type="hidden" name="subscriber_id" value="{{ subscriber.id }}">
+                  <button name="action" value="toggle" class="btn btn__ghost">
+                    {% if subscriber.is_active %}Deactivate{% else %}Activate{% endif %}
+                  </button>
+                  <button name="action"
+                          value="delete"
+                          class="btn btn__danger"
+                          onclick="return confirm('Delete this subscriber?')">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="px-4 py-10 text-center text-slate-500">No subscribers yet.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% include "dashboard/components/pagination.html" %}
+{% endblock %}

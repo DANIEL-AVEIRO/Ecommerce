@@ -1,123 +1,212 @@
 {% extends "website/components/base.html" %}
-{% load store_tags %}
-
+{% load humanize %}
 {% block title %}Checkout — DANIEL{% endblock %}
-
 {% block content %}
-<div class="border-b border-stone-900/5 bg-gradient-to-b from-stone-50 to-stone-100">
-  <div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
-    <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Checkout</h1>
-    <p class="mt-2 text-sm text-stone-900/60 sm:text-base">Secure payment · Ships nationwide</p>
-  </div>
-</div>
-
-<div class="mx-auto max-w-6xl px-4 py-8 pb-28 sm:py-10 lg:pb-10">
-  <form id="checkout-form" action="{% url 'checkout' %}" method="post" class="grid gap-10 lg:grid-cols-3">
-    {% csrf_token %}
-    <div class="space-y-10 lg:col-span-2">
-      <section>
-        <h2 class="font-display text-xl font-bold">Contact</h2>
-        <div class="mt-4 grid gap-4 sm:grid-cols-2">
-          <div class="sm:col-span-2">
-            <label for="email" class="label">Email</label>
-            <input id="email" name="email" type="email" required value="{{ user.email }}" class="field" placeholder="Enter your email">
-          </div>
-          <div class="sm:col-span-2">
-            <label for="phone" class="label">Phone</label>
-            <input id="phone" name="phone" type="tel" required value="{% if default_address %}{{ default_address.phone }}{% elif profile_phone %}{{ profile_phone }}{% endif %}" class="field" placeholder="Enter your phone number">
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <h2 class="font-display text-xl font-bold">Shipping address</h2>
-        <div class="mt-4 grid gap-4 sm:grid-cols-2">
-          <div>
-            <label for="first_name" class="label">First name</label>
-            <input id="first_name" name="first_name" required value="{% if default_address %}{{ default_address.first_name }}{% else %}{{ user.first_name }}{% endif %}" class="field" placeholder="Enter your first name">
-          </div>
-          <div>
-            <label for="last_name" class="label">Last name</label>
-            <input id="last_name" name="last_name" value="{% if default_address %}{{ default_address.last_name }}{% else %}{{ user.last_name }}{% endif %}" class="field" placeholder="Enter your last name">
-          </div>
-          <div class="sm:col-span-2">
-            <label for="address" class="label">Address</label>
-            <input id="address" name="address" required value="{% if default_address %}{{ default_address.address }}{% endif %}" class="field" placeholder="Enter your address">
-          </div>
-          <div>
-            <label for="city" class="label">City / Township</label>
-            <input id="city" name="city" required value="{% if default_address %}{{ default_address.city }}{% endif %}" class="field" placeholder="Enter your city">
-          </div>
-          <div>
-            <label for="region" class="label">Region</label>
-            <select id="region" name="region" class="field">
-              <option {% if default_address.region == "Yangon" %}selected{% endif %}>Yangon</option>
-              <option {% if default_address.region == "Mandalay" %}selected{% endif %}>Mandalay</option>
-              <option {% if default_address.region == "Naypyidaw" %}selected{% endif %}>Naypyidaw</option>
-              <option {% if default_address.region == "Other" %}selected{% endif %}>Other</option>
-            </select>
-          </div>
-          <div class="sm:col-span-2">
-            <label for="notes" class="label">Delivery notes (optional)</label>
-            <textarea id="notes" name="notes" rows="3" class="field" placeholder="Enter your delivery notes"></textarea>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <h2 class="font-display text-xl font-bold">Shipping method</h2>
-        <p class="mt-2 text-sm text-stone-900/55">Free standard shipping on orders over 150,000 Ks.</p>
-        <div class="mt-4 space-y-3">
-          <label class="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-stone-900/10 bg-white px-3 py-3 transition has-[:checked]:border-emerald-700 has-[:checked]:bg-emerald-700/[0.03] sm:gap-4 sm:px-4">
-            <span class="flex min-w-0 items-center gap-3 text-sm"><input type="radio" name="shipping" value="standard" class="accent-emerald-700" checked> <span class="min-w-0">Standard (2–4 days Yangon)</span></span>
-            <span class="shrink-0 text-sm font-semibold">{% if shipping_fee == 0 %}Free{% else %}{{ shipping_fees.standard|money }}{% endif %}</span>
-          </label>
-          <label class="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-stone-900/10 bg-white px-3 py-3 transition has-[:checked]:border-emerald-700 has-[:checked]:bg-emerald-700/[0.03] sm:gap-4 sm:px-4">
-            <span class="flex min-w-0 items-center gap-3 text-sm"><input type="radio" name="shipping" value="express" class="accent-emerald-700"> <span class="min-w-0">Express (1–2 days)</span></span>
-            <span class="shrink-0 text-sm font-semibold">{{ shipping_fees.express|money }}</span>
-          </label>
-        </div>
-      </section>
-
-      <section>
-        <h2 class="font-display text-xl font-bold">Payment</h2>
-        <p class="mt-2 text-sm text-stone-900/55">You’ll get payment instructions by email for KBZ / Wave / bank transfer.</p>
-        <div class="mt-4 space-y-3">
-          <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-stone-900/10 bg-white px-4 py-3 text-sm transition has-[:checked]:border-emerald-700 has-[:checked]:bg-emerald-700/[0.03]"><input type="radio" name="payment" value="cod" class="accent-emerald-700" checked> Cash on delivery</label>
-          <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-stone-900/10 bg-white px-4 py-3 text-sm transition has-[:checked]:border-emerald-700 has-[:checked]:bg-emerald-700/[0.03]"><input type="radio" name="payment" value="kbz" class="accent-emerald-700"> KBZ Pay / Wave Money</label>
-          <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-stone-900/10 bg-white px-4 py-3 text-sm transition has-[:checked]:border-emerald-700 has-[:checked]:bg-emerald-700/[0.03]"><input type="radio" name="payment" value="card" class="accent-emerald-700"> Bank transfer</label>
-        </div>
-      </section>
+  <div class="border-b border-stone-900/5 bg-gradient-to-b from-stone-50 to-stone-100">
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:py-12">
+      <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Checkout</h1>
+      <p class="mt-2 text-sm text-stone-900/60 sm:text-base">Secure payment · Ships nationwide</p>
     </div>
-
-    <aside class="hidden h-fit rounded-lg border border-stone-900/10 bg-white p-6 lg:sticky lg:top-24 lg:block">
-      <h2 class="font-display text-xl font-bold">Your order</h2>
-      <ul class="mt-6 space-y-4 text-sm">
-        {% for item in items %}
-        <li class="flex justify-between gap-3">
-          <span class="min-w-0 break-words text-stone-900/70">{{ item.product.name }} × {{ item.quantity }}</span>
-          <span class="shrink-0 font-medium">{{ item.line_total|money }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-      <dl class="mt-6 space-y-3 border-t border-stone-900/10 pt-4 text-sm">
-        <div class="flex justify-between gap-3"><dt class="text-stone-900/55">Subtotal</dt><dd class="shrink-0 font-medium">{{ subtotal|money }}</dd></div>
-        <div class="flex justify-between gap-3"><dt class="text-stone-900/55">Shipping</dt><dd class="shrink-0 font-medium">{{ shipping_fee|money }}</dd></div>
-        <div class="flex justify-between gap-3 border-t border-stone-900/10 pt-3 text-base"><dt class="font-semibold">Total</dt><dd class="shrink-0 font-semibold">{{ total|money }}</dd></div>
-      </dl>
-      <button type="submit" class="btn-primary mt-6 w-full">Place order</button>
-      <p class="mt-3 text-center text-xs text-stone-900/45">By placing an order you agree to our <a href="{% url 'terms' %}" class="underline transition hover:text-emerald-700">Terms</a>.</p>
-    </aside>
-  </form>
-</div>
-
-<div class="fixed inset-x-0 bottom-16 z-40 border-t border-stone-900/10 bg-stone-50/95 px-4 py-3 backdrop-blur-md lg:hidden">
-  <div class="mx-auto flex max-w-lg items-center justify-between gap-4">
-    <div>
-      <p class="text-xs text-stone-900/50">Total</p>
-      <p class="font-semibold">{{ total|money }}</p>
-    </div>
-    <button type="submit" form="checkout-form" class="btn-primary px-6">Place order</button>
   </div>
-</div>
+  <div class="mx-auto max-w-6xl px-4 py-8 pb-28 sm:py-10 lg:pb-10">
+    <form id="checkout-form"
+          action="{% url 'checkout' %}"
+          method="post"
+          enctype="multipart/form-data"
+          class="grid gap-10 lg:grid-cols-3">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="place_order">
+      <div class="space-y-10 lg:col-span-2">
+        <section>
+          <h2 class="font-display text-xl font-bold">Contact</h2>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <label for="email" class="label">Email</label>
+              <input id="email"
+                     name="email"
+                     type="email"
+                     required
+                     value="{{ user.email }}"
+                     class="field"
+                     placeholder="Enter your email">
+            </div>
+            <div class="sm:col-span-2">
+              <label for="phone" class="label">Phone</label>
+              <input id="phone"
+                     name="phone"
+                     type="tel"
+                     required
+                     value="{% if default_address %}{{ default_address.phone }}{% elif profile_phone %}{{ profile_phone }}{% endif %}"
+                     class="field"
+                     placeholder="Enter your phone number">
+            </div>
+          </div>
+        </section>
+        <section>
+          <h2 class="font-display text-xl font-bold">Shipping address</h2>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <label for="username" class="label">Username</label>
+              <input id="username"
+                     name="username"
+                     required
+                     value="{% if default_address %}{{ default_address.username }}{% else %}{{ user.username }}{% endif %}"
+                     class="field"
+                     placeholder="Enter username">
+            </div>
+            <div class="sm:col-span-2">
+              <label for="address" class="label">Address</label>
+              <input id="address"
+                     name="address"
+                     required
+                     value="{% if default_address %}{{ default_address.address }}{% endif %}"
+                     class="field"
+                     placeholder="Enter your address">
+            </div>
+            <div>
+              <label for="city" class="label">City / Township</label>
+              <input id="city"
+                     name="city"
+                     required
+                     value="{% if default_address %}{{ default_address.city }}{% endif %}"
+                     class="field"
+                     placeholder="Enter your city">
+            </div>
+            <div>
+              <label for="region" class="label">Region</label>
+              <select id="region" name="region" class="field">
+                {% for name in region_names %}
+                  <option value="{{ name }}"
+                          {% if selected_region == name %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label for="notes" class="label">Delivery notes (optional)</label>
+              <textarea id="notes"
+                        name="notes"
+                        rows="3"
+                        class="field"
+                        placeholder="Enter your delivery notes"></textarea>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h2 class="font-display text-xl font-bold">Shipping method</h2>
+          <p class="mt-2 text-sm text-stone-900/55">Free standard shipping on orders over {{ free_shipping_over|intcomma }} Ks.</p>
+          <div class="mt-4 space-y-3">
+            <label class="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-stone-900/10 bg-white px-3 py-3 transition has-[:checked]:border-emerald-700 has-[:checked]:bg-emerald-700/[0.03] sm:gap-4 sm:px-4">
+              <span class="flex min-w-0 items-center gap-3 text-sm">
+                <input type="radio"
+                       name="shipping"
+                       value="standard"
+                       class="accent-emerald-700"
+                       checked>
+                <span class="min-w-0">Standard (2–4 days Yangon)</span></span>
+              <span class="shrink-0 text-sm font-semibold">{% if shipping_fee == 0 %}Free{% else %}{{ shipping_fees.standard|intcomma }} Ks{% endif %}</span>
+            </label>
+            <label class="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-stone-900/10 bg-white px-3 py-3 transition has-[:checked]:border-emerald-700 has-[:checked]:bg-emerald-700/[0.03] sm:gap-4 sm:px-4">
+              <span class="flex min-w-0 items-center gap-3 text-sm">
+                <input type="radio"
+                       name="shipping"
+                       value="express"
+                       class="accent-emerald-700">
+                <span class="min-w-0">Express (1–2 days)</span></span>
+              <span class="shrink-0 text-sm font-semibold">{{ shipping_fees.express|intcomma }} Ks</span>
+            </label>
+          </div>
+        </section>
+        <section>
+          <h2 class="font-display text-xl font-bold">Payment</h2>
+          <p class="mt-2 text-sm text-stone-900/55">If a method needs a screenshot, upload it on your order page after checkout.</p>
+          <div class="mt-4 space-y-3">
+            {% for method in payment_methods %}
+              <label class="block cursor-pointer rounded-lg border border-stone-900/10 bg-white px-4 py-3 text-sm transition has-[:checked]:border-emerald-700 has-[:checked]:bg-emerald-700/[0.03]">
+                <span class="flex items-center gap-3">
+                  <input type="radio"
+                         name="payment"
+                         value="{{ method.id }}"
+                         class="accent-emerald-700"
+                         {% if forloop.first %}checked{% endif %}>
+                  <span class="font-medium">{{ method.name }}</span>
+                </span>
+                {% if method.account_info %}
+                  <p class="mt-2 pl-7 text-xs text-stone-900/55 whitespace-pre-line">{{ method.account_info }}</p>
+                {% endif %}
+                {% if method.instructions %}
+                  <p class="mt-1 pl-7 text-xs text-stone-900/45 whitespace-pre-line">{{ method.instructions }}</p>
+                {% endif %}
+              </label>
+            {% empty %}
+              <p class="text-sm text-red-700">No payment methods available. Please contact the store.</p>
+            {% endfor %}
+          </div>
+        </section>
+        <section>
+          <h2 class="font-display text-xl font-bold">Coupon</h2>
+          <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+            <input name="coupon_code"
+                   type="text"
+                   value="{{ coupon_code }}"
+                   class="field flex-1"
+                   placeholder="Enter coupon code">
+          </div>
+          {% if discount_amount %}
+            <p class="mt-2 text-sm font-medium text-emerald-700">Discount applied: −{{ discount_amount|intcomma }} Ks</p>
+          {% endif %}
+        </section>
+      </div>
+      <aside class="hidden h-fit rounded-lg border border-stone-900/10 bg-white p-6 lg:sticky lg:top-24 lg:block">
+        <h2 class="font-display text-xl font-bold">Your order</h2>
+        <ul class="mt-6 space-y-4 text-sm">
+          {% for item in items %}
+            <li class="flex justify-between gap-3">
+              <span class="min-w-0 break-words text-stone-900/70">{{ item.product.name }} × {{ item.quantity }}</span>
+              <span class="shrink-0 font-medium">{{ item.line_total|intcomma }} Ks</span>
+            </li>
+          {% endfor %}
+        </ul>
+        <dl class="mt-6 space-y-3 border-t border-stone-900/10 pt-4 text-sm">
+          <div class="flex justify-between gap-3">
+            <dt class="text-stone-900/55">Subtotal</dt>
+            <dd class="shrink-0 font-medium">
+              {{ subtotal|intcomma }} Ks
+            </dd>
+          </div>
+          {% if discount_amount %}
+            <div class="flex justify-between gap-3">
+              <dt class="text-stone-900/55">Discount</dt>
+              <dd class="shrink-0 font-medium text-emerald-700">
+                −{{ discount_amount|intcomma }} Ks
+              </dd>
+            </div>
+          {% endif %}
+          <div class="flex justify-between gap-3">
+            <dt class="text-stone-900/55">Shipping</dt>
+            <dd class="shrink-0 font-medium">
+              {{ shipping_fee|intcomma }} Ks
+            </dd>
+          </div>
+          <div class="flex justify-between gap-3 border-t border-stone-900/10 pt-3 text-base">
+            <dt class="font-semibold">Total</dt>
+            <dd class="shrink-0 font-semibold">
+              {{ total|intcomma }} Ks
+            </dd>
+          </div>
+        </dl>
+        <button type="submit" class="btn__primary mt-6 w-full">Place order</button>
+        <p class="mt-3 text-center text-xs text-stone-900/45">By placing an order you agree to our <a href="{% url 'terms' %}"
+    class="underline transition hover:text-emerald-700">Terms</a>.</p>
+      </aside>
+    </form>
+  </div>
+  <div class="fixed inset-x-0 bottom-16 z-40 border-t border-stone-900/10 bg-stone-50/95 px-4 py-3 backdrop-blur-md lg:hidden">
+    <div class="mx-auto flex max-w-lg items-center justify-between gap-4">
+      <div>
+        <p class="text-xs text-stone-900/50">Total</p>
+        <p class="font-semibold">{{ total|intcomma }} Ks</p>
+      </div>
+      <button type="submit" form="checkout-form" class="btn__primary px-6">Place order</button>
+    </div>
+  </div>
 {% endblock %}
