@@ -71,13 +71,15 @@ class CouponModel(BaseModel):
             return False
         if self.max_uses > 0 and self.used_count >= self.max_uses:
             return False
-        if self.expires_at and timezone.now() > self.expires_at:
-            return False
+        if self.expires_at:
+            expires_at = self.expires_at
+            if timezone.is_naive(expires_at):
+                expires_at = timezone.make_aware(expires_at)
+            if timezone.now() > expires_at:
+                return False
         return True
 
     def calc_discount(self, subtotal):
-        if not self.is_valid_now():
-            return 0
         if subtotal < self.min_order_amount:
             return 0
 

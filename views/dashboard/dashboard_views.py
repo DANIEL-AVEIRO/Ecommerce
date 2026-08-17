@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.utils.text import slugify
 from urllib.parse import urlencode
@@ -706,6 +707,8 @@ def dashboard_coupons(request):
             expires_at = parse_datetime(expires_at_raw)
             if not expires_at:
                 expires_at = parse_datetime(expires_at_raw + "T23:59:59")
+            if expires_at and timezone.is_naive(expires_at):
+                expires_at = timezone.make_aware(expires_at)
 
         if action == "toggle":
             coupon = CouponModel.objects.filter(id=coupon_id).first()

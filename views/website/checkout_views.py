@@ -8,6 +8,8 @@ from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
+from django.utils import timezone
+from urllib.parse import urlencode
 
 from enums.order_enums import OrderStatus, PaymentStatus
 from core.models import (
@@ -42,17 +44,39 @@ def get_shipping_fees(region_name):
 
 
 def find_valid_coupon(coupon_code, subtotal):
-    if not coupon_code:
-        return None, 0
-    coupon = CouponModel.objects.filter(code=coupon_code).first()
+    code = coupon_code.strip()
+    if not code:
+        return None, 0, ""
+
+    coupon = CouponModel.objects.filter(code__iexact=code).first()
     if not coupon:
-        return None, 0
-    if not coupon.is_valid_now():
-        return None, 0
+        return None, 0, "Invalid coupon code."
+
+    if not coupon.is_active:
+        return None, 0, "This coupon is no longer active."
+
+    if coupon.max_uses > 0 and coupon.used_count >= coupon.max_uses:
+        return None, 0, "This coupon has reached its usage limit."
+
+    if coupon.expires_at:
+        expires_at = coupon.expires_at
+        if timezone.is_naive(expires_at):
+            expires_at = timezone.make_aware(expires_at)
+        if timezone.now() > expires_at:
+            return None, 0, "This coupon has expired."
+
+    if subtotal < coupon.min_order_amount:
+        return (
+            None,
+            0,
+            f"This coupon needs a minimum order of {coupon.min_order_amount} Ks.",
+        )
+
     discount = coupon.calc_discount(subtotal)
     if discount <= 0:
-        return None, 0
-    return coupon, discount
+        return None, 0, "This coupon has no discount for your cart."
+
+    return coupon, discount, ""
 
 
 def send_order_email(request, order):
@@ -165,17 +189,21 @@ def checkout(request):
 
     coupon_code = ""
     discount_amount = 0
+    coupon_error = ""
     if request.method == "POST":
-        coupon_code = request.POST.get("coupon_code", "").upper()
+        coupon_code = request.POST.get("coupon_code", "").strip().upper()
     elif request.GET.get("coupon"):
-        coupon_code = request.GET.get("coupon", "").upper()
+        coupon_code = request.GET.get("coupon", "").strip().upper()
 
     if coupon_code:
-        coupon, discount_amount = find_valid_coupon(coupon_code, subtotal)
+        coupon, discount_amount, coupon_error = find_valid_coupon(
+            coupon_code, subtotal
+        )
         if not coupon:
-            if request.method == "POST" and request.POST.get("action") != "place_order":
-                messages.error(request, "Invalid or expired coupon code.")
+            if request.method == "GET" and request.GET.get("coupon"):
+                messages.error(request, coupon_error or "Invalid coupon code.")
             coupon_code = ""
+            discount_amount = 0
 
     shipping_fees = get_shipping_fees(selected_region)
     shipping_fee = shipping_fees["standard"]
@@ -206,10 +234,20 @@ def checkout(request):
         action = request.POST.get("action", "place_order")
 
         if action == "apply_coupon":
-            if coupon_code and discount_amount > 0:
+            typed_code = request.POST.get("coupon_code", "").strip().upper()
+            if not typed_code:
+                messages.error(request, "Please enter a coupon code.")
+                return redirect("checkout")
+
+            coupon, discount_amount, coupon_error = find_valid_coupon(
+                typed_code, subtotal
+            )
+            if coupon and discount_amount > 0:
                 messages.success(request, "Coupon applied.")
-            elif request.POST.get("coupon_code"):
-                messages.error(request, "Invalid or unused coupon.")
+                query = urlencode({"coupon": coupon.code})
+                return redirect("/checkout/?" + query)
+
+            messages.error(request, coupon_error or "Invalid coupon code.")
             return redirect("checkout")
 
         email = request.POST.get("email", "")
@@ -221,7 +259,7 @@ def checkout(request):
         notes = request.POST.get("notes", "")
         shipping_method = request.POST.get("shipping", "standard")
         payment_method_id = request.POST.get("payment", "")
-        coupon_code = request.POST.get("coupon_code", "").upper()
+        coupon_code = request.POST.get("coupon_code", "").strip().upper()
 
         payment_method = PaymentMethodModel.objects.filter(
             id=payment_method_id, is_active=True
@@ -236,10 +274,44 @@ def checkout(request):
         shipping_fees = get_shipping_fees(region)
         discount_amount = 0
         coupon = None
+        typed_coupon = coupon_code
         if coupon_code:
-            coupon, discount_amount = find_valid_coupon(coupon_code, subtotal)
+            coupon, discount_amount, coupon_error = find_valid_coupon(
+                coupon_code, subtotal
+            )
             if not coupon:
-                coupon_code = ""
+                messages.error(
+                    request,
+                    coupon_error or "Invalid coupon code.",
+                )
+                checkout_context = {
+                    "items": items,
+                    "subtotal": subtotal,
+                    "discount_amount": 0,
+                    "coupon_code": typed_coupon,
+                    "shipping_fee": shipping_fees.get(
+                        shipping_method, shipping_fees["standard"]
+                    ),
+                    "total": subtotal
+                    + shipping_fees.get(shipping_method, shipping_fees["standard"]),
+                    "shipping_fees": shipping_fees,
+                    "region_names": region_names,
+                    "selected_region": region or selected_region,
+                    "default_address": default_address,
+                    "profile_phone": profile.phone,
+                    "free_shipping_over": FREE_SHIPPING_OVER,
+                    "payment_methods": payment_methods,
+                }
+                after_discount = subtotal
+                shipping_fee = shipping_fees.get(
+                    shipping_method, shipping_fees["standard"]
+                )
+                if after_discount >= FREE_SHIPPING_OVER and shipping_method == "standard":
+                    shipping_fee = 0
+                checkout_context["shipping_fee"] = shipping_fee
+                checkout_context["total"] = after_discount + shipping_fee
+                return render(request, "website/checkout.html", checkout_context)
+            coupon_code = coupon.code
 
         shipping_fee = shipping_fees.get(shipping_method, shipping_fees["standard"])
         after_discount = subtotal - discount_amount
@@ -350,13 +422,14 @@ def checkout(request):
 
                 if coupon_code:
                     coupon_locked = (
-                        CouponModel.objects.filter(code=coupon_code)
+                        CouponModel.objects.filter(code__iexact=coupon_code)
                         .select_for_update()
                         .first()
                     )
                     if coupon_locked and coupon_locked.is_valid_now():
-                        coupon_locked.used_count = coupon_locked.used_count + 1
-                        coupon_locked.save()
+                        if subtotal >= coupon_locked.min_order_amount:
+                            coupon_locked.used_count = coupon_locked.used_count + 1
+                            coupon_locked.save()
 
                 OrderStatusEventModel.objects.create(
                     order=order,
